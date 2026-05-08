@@ -1,4 +1,7 @@
+// At the very top, replace your imports with:
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useI18n, LANGUAGES } from "./lib/i18n";
+import { useLocalStorage, fileToBase64, toast, useToasts, DEFAULT_SOLAR, DEFAULT_SETTINGS } from "./lib/store";
 
 // ============================================================
 // IMAGE DATA
