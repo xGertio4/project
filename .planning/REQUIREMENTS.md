@@ -168,20 +168,91 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FND-01 through FND-12 | Phase 1 | Pending |
-| BRD-01 through BRD-09 | Phase 2 | Pending |
-| ARC-01 through ARC-06 | Phase 2 | Pending |
-| TRA-01 through TRA-10 | Phase 3 | Pending |
-| PUB-01 through PUB-14 | Phase 4 | Pending |
-| I18N-01 through I18N-06 | Phase 4 | Pending |
-| ADM-01 through ADM-10 | Phase 5 | Pending |
-| QLT-01 through QLT-08 | Phase 6 | Pending |
+| FND-01 | Phase 1 | Pending |
+| FND-02 | Phase 1 | Pending |
+| FND-03 | Phase 1 | Pending |
+| FND-04 | Phase 1 | Pending |
+| FND-05 | Phase 1 | Pending |
+| FND-06 | Phase 1 | Pending |
+| FND-07 | Phase 1 | Pending |
+| FND-08 | Phase 1 | Pending |
+| FND-09 | Phase 1 | Pending |
+| FND-10 | Phase 1 | Pending |
+| FND-11 | Phase 1 | Pending |
+| FND-12 | Phase 1 | Pending |
+| BRD-01 | Phase 2 | Pending |
+| BRD-02 | Phase 2 | Pending |
+| BRD-03 | Phase 2 | Pending |
+| BRD-04 | Phase 2 | Pending |
+| BRD-05 | Phase 2 | Pending |
+| BRD-06 | Phase 2 | Pending |
+| BRD-07 | Phase 2 | Pending |
+| BRD-08 | Phase 2 | Pending |
+| BRD-09 | Phase 2 | Pending |
+| ARC-01 | Phase 2 | Pending |
+| ARC-02 | Phase 2 | Pending |
+| ARC-03 | Phase 2 | Pending |
+| ARC-04 | Phase 2 | Pending |
+| ARC-05 | Phase 2 | Pending |
+| ARC-06 | Phase 2 | Pending |
+| TRA-01 | Phase 3 | Pending |
+| TRA-02 | Phase 3 | Pending |
+| TRA-03 | Phase 3 | Pending |
+| TRA-04 | Phase 3 | Pending |
+| TRA-05 | Phase 3 | Pending |
+| TRA-06 | Phase 3 | Pending |
+| TRA-07 | Phase 3 | Pending |
+| TRA-08 | Phase 3 | Pending |
+| TRA-09 | Phase 3 | Pending |
+| TRA-10 | Phase 3 | Pending |
+| ADM-06 | Phase 3 | Pending |
+| ADM-07 | Phase 3 | Pending |
+| ADM-08 | Phase 3 | Pending |
+| PUB-01 | Phase 4 | Pending |
+| PUB-02 | Phase 4 | Pending |
+| PUB-03 | Phase 4 | Pending |
+| PUB-04 | Phase 4 | Pending |
+| PUB-05 | Phase 4 | Pending |
+| PUB-06 | Phase 4 | Pending |
+| PUB-07 | Phase 4 | Pending |
+| PUB-08 | Phase 4 | Pending |
+| PUB-09 | Phase 4 | Pending |
+| PUB-10 | Phase 4 | Pending |
+| PUB-11 | Phase 4 | Pending |
+| PUB-12 | Phase 4 | Pending |
+| PUB-13 | Phase 4 | Pending |
+| PUB-14 | Phase 4 | Pending |
+| I18N-01 | Phase 4 | Pending |
+| I18N-02 | Phase 4 | Pending |
+| I18N-03 | Phase 4 | Pending |
+| I18N-04 | Phase 4 | Pending |
+| I18N-05 | Phase 4 | Pending |
+| I18N-06 | Phase 4 | Pending |
+| ADM-01 | Phase 5 | Pending |
+| ADM-02 | Phase 5 | Pending |
+| ADM-03 | Phase 5 | Pending |
+| ADM-04 | Phase 5 | Pending |
+| ADM-05 | Phase 5 | Pending |
+| ADM-09 | Phase 5 | Pending |
+| ADM-10 | Phase 5 | Pending |
+| QLT-01 | Phase 6 | Pending |
+| QLT-02 | Phase 6 | Pending |
+| QLT-03 | Phase 6 | Pending |
+| QLT-04 | Phase 6 | Pending |
+| QLT-05 | Phase 6 | Pending |
+| QLT-06 | Phase 6 | Pending |
+| QLT-07 | Phase 6 | Pending |
+| QLT-08 | Phase 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 71 total
-- Mapped to phases: 71
+- v1 requirements: 75 total
+- Mapped to phases: 75
 - Unmapped: 0 ✓
+
+**Note on count:** Initial traceability stated 71 requirements. Actual count from enumerated requirement IDs is 75 (FND×12 + BRD×9 + ARC×6 + TRA×10 + PUB×14 + I18N×6 + ADM×10 + QLT×8). All 75 are mapped.
+
+**Key departure from initial traceability:** ADM-06, ADM-07, ADM-08 are assigned to Phase 3 (not Phase 5) because they are tightly coupled to the Transform critical path — lead status workflow, realtime badge, and image lightbox are the admin side of the Transform funnel and must ship together with the public form.
 
 ---
 *Requirements defined: 2026-05-09*
-*Last updated: 2026-05-09 after initial definition*
+*Last updated: 2026-05-09 — traceability updated after roadmap creation; ADM-06/07/08 moved to Phase 3*
