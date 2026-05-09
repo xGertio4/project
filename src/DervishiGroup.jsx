@@ -12,9 +12,7 @@ const IMAGES = {"hero1": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wB
 // ============================================================
 // ADMIN CREDENTIALS
 // ============================================================
-const ADMIN_USERS = [
-  { email: "**REMOVED**", password: "**REMOVED**", role: "admin" }
-];
+const ADMIN_USERS = []; // legacy stub — replaced by Supabase Auth in Plan 03
 
 // ============================================================
 // MAIN APP
@@ -543,9 +541,7 @@ function AdminPanel({ auth, setAuth, setPage, dark }) {
   }, [activeTab]);
 
   const handleLogin = () => {
-    const user = ADMIN_USERS.find(u => u.email === loginForm.email && u.password === loginForm.password);
-    if(user) { setAuth(user); setLoginError(""); }
-    else setLoginError("Email ose fjalëkalim i gabuar.");
+    setLoginError('Login disabled — Supabase Auth wiring in progress');
   };
 
   if(!auth) {

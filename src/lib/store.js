@@ -108,11 +108,6 @@ export const DEFAULT_SETTINGS = {
 };
 
 // ---- Auth (sessionStorage so it clears on tab close) ----
-export const ADMIN_CREDENTIALS = {
-  email: "**REMOVED**",
-  password: "**REMOVED**"
-};
-
 export function useAuth() {
   const [user, setUserState] = useState(() => {
     try { return JSON.parse(sessionStorage.getItem("dg_auth") || "null"); } catch { return null; }

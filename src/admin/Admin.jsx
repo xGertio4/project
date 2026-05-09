@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useI18n } from "../lib/i18n";
 import {
-  useLocalStorage, useAuth, ADMIN_CREDENTIALS, useToasts, toast,
+  useLocalStorage, useAuth, useToasts, toast,
   downloadCSV, fileToBase64, DEFAULT_SOLAR, DEFAULT_SETTINGS
 } from "../lib/store";
 
@@ -93,9 +93,8 @@ function Login({ t, setUser, navigate }) {
   const [form, setForm] = useState({ email:"", password:"" });
   const [err, setErr] = useState("");
   const submit = () => {
-    if (form.email === ADMIN_CREDENTIALS.email && form.password === ADMIN_CREDENTIALS.password) {
-      setUser({ email: form.email, role: "admin" });
-    } else setErr(t.admin.err);
+    setErr('Login disabled — Supabase Auth wiring in progress');
+    return;
   };
   return (
     <div className="admin-login-wrap">
