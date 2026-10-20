@@ -16,11 +16,18 @@
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
          padding: env(safe-area-inset-top) 16px calc(24px + env(safe-area-inset-bottom)); }
-  header { display: flex; align-items: center; justify-content: space-between; padding: 18px 0 10px; }
+  header { display: flex; align-items: center; justify-content: space-between; padding: 18px 0 10px; gap: 8px; }
   h1 { font-size: 22px; margin: 0; }
   .sub { color: var(--muted); font-size: 13px; }
+  .right { display: flex; gap: 8px; align-items: center; }
   .pill { font-size: 12px; padding: 4px 10px; border-radius: 99px; background: var(--card); border: 1px solid var(--line); color: var(--muted); }
   .pill.on { color: var(--done); border-color: #1f4d33; }
+  .gear { background: var(--card); border: 1px solid var(--line); border-radius: 99px; width: 34px; height: 34px; padding: 0; font-size: 16px; }
+  .tabs { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 2px; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { flex: none; font-size: 13px; padding: 7px 12px; border-radius: 99px; background: var(--card); border: 1px solid var(--line); color: var(--muted); }
+  .tab.sel { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 600; }
+  .tab .c { opacity: .7; margin-left: 4px; }
   section { margin-top: 18px; }
   h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 8px; display: flex; gap: 8px; align-items: center; }
   h2 .n { background: var(--card); border-radius: 99px; padding: 0 8px; font-size: 12px; }
@@ -41,14 +48,28 @@
   .k-wait { --c: var(--wait); } .k-work { --c: var(--work); } .k-done { --c: var(--done); } .k-stuck { --c: var(--stuck); } .k-info { --c: var(--info); }
   .tag { font-size: 11px; font-weight: 600; color: var(--c); text-transform: uppercase; letter-spacing: .05em; }
   details summary { color: var(--muted); font-size: 13px; cursor: pointer; margin: 4px 0 8px; }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+  .row:first-of-type { border-top: 0; }
+  .row label { flex: 1; }
+  .row .hint { display: block; color: var(--muted); font-size: 12px; }
+  input[type=time] { font: inherit; background: #0b0d11; color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; color-scheme: dark; }
+  input[type=checkbox] { width: 22px; height: 22px; accent-color: var(--work); }
   .hidden { display: none; }
 </style>
 </head>
 <body>
 <header>
   <div><h1>Assistant</h1><div class="sub" id="updated">Wesley's project updates</div></div>
-  <span class="pill" id="status">Off</span>
+  <div class="right"><span class="pill" id="status">Off</span><button class="gear" id="gearBtn" aria-label="Settings">⚙</button></div>
 </header>
+
+<div class="setup hidden" id="settings">
+  <div class="row"><label for="quietOn">Quiet hours<span class="hint">Updates still arrive, just without sound or vibration.</span></label><input type="checkbox" id="quietOn"></div>
+  <div class="row"><label>From</label><input type="time" id="quietFrom"></div>
+  <div class="row"><label>To</label><input type="time" id="quietTo"></div>
+  <div class="row"><label for="urgentRings">"Needs you" still rings<span class="hint">During quiet hours, things waiting on you still make a sound.</span></label><input type="checkbox" id="urgentRings"></div>
+  <div class="row"><span class="hint">Morning summary arrives every day at about 08:10.</span></div>
+</div>
 
 <div class="setup hidden" id="install">
   <p><b>Put this on your home screen</b> so it opens like an app. Notifications already work without it.</p>
@@ -57,7 +78,7 @@
 </div>
 
 <div class="setup hidden" id="enable">
-  <p><b>Step 2. Turn on notifications</b> so every update from Claude lands on your lock screen.</p>
+  <p><b>Turn on notifications</b> so every update from Claude lands on your lock screen.</p>
   <button class="btn primary" id="enableBtn">Turn on notifications</button>
   <p class="sub hidden" id="blocked" style="margin:10px 0 0">Notifications are blocked for this app. Long-press the app icon, tap ⓘ App info, then Notifications, and allow them.</p>
 </div>
@@ -67,6 +88,8 @@
   <div class="code" id="code"></div>
   <button class="btn primary" id="copyBtn">Copy code</button>
 </div>
+
+<nav class="tabs" id="tabs"></nav>
 
 <main id="feed">
   <section><h2>Waiting on you <span class="n" id="nWait">0</span></h2><div id="wait"></div></section>
@@ -78,24 +101,41 @@
 <script>
 const VAPID_PUBLIC = 'BM25jzjsJccjy-p0j1Y2CgK4pGlkiOvg3jjIswlbcjnwOh1Lc79ixRIGS10OZGA5cvi2Iplt5HDNxXx6F79K-Zk';
 const LABEL = { wait: 'Needs you', work: 'Started', done: 'Done', stuck: 'Stuck', info: 'Update' };
+const BRANDS = [['all', 'All'], ['besa', 'Besa'], ['marsilda', 'Marsilda'], ['bp', 'Balkan Power'], ['other', 'Other']];
+const DEFAULTS = { quietOn: true, quietFrom: '23:00', quietTo: '08:00', urgentRings: true };
 const $ = (id) => document.getElementById(id);
+const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
 
-// Same tiny IndexedDB store the service worker writes to.
+// Same keyword map as notify.mjs, for updates that arrive without a brand.
+function brandOf(text) {
+  if (/balkan|publer|carousel|vanesa|anisa|kanita|supplement/i.test(text)) return 'bp';
+  if (/marsilda|kryme|\bleo\b|randolph|uwm|tech ?academy|seminar|vinegar hill|interview clean cut/i.test(text)) return 'marsilda';
+  if (/besa|ariel|sofia|lisa lex|tetiana|megan|heather|twins|destiny|\bines\b|marija|genjutsu|prompt|reel|skit|halloween|higgsf|seedance|model|edit/i.test(text)) return 'besa';
+  return 'other';
+}
+const brand = (it) => it.brand || brandOf(`${it.key || ''} ${it.title || ''}`);
+
+// Same IndexedDB the service worker writes to.
 function db() {
   return new Promise((res, rej) => {
-    const r = indexedDB.open('assistant', 1);
-    r.onupgradeneeded = () => r.result.createObjectStore('items', { keyPath: 'id' });
+    const r = indexedDB.open('assistant', 2);
+    r.onupgradeneeded = () => {
+      if (!r.result.objectStoreNames.contains('items')) r.result.createObjectStore('items', { keyPath: 'id' });
+      if (!r.result.objectStoreNames.contains('settings')) r.result.createObjectStore('settings');
+    };
     r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
   });
 }
-async function allItems() {
-  const d = await db();
-  return new Promise((res) => { const q = d.transaction('items').objectStore('items').getAll(); q.onsuccess = () => res(q.result || []); q.onerror = () => res([]); });
+function req(name, mode, fn) {
+  return db().then((d) => new Promise((res) => {
+    const t = d.transaction(name, mode); const q = fn(t.objectStore(name));
+    t.oncomplete = () => res(q && q.result); t.onerror = () => res(undefined);
+  }));
 }
-async function putItem(it) {
-  const d = await db();
-  return new Promise((res) => { const t = d.transaction('items', 'readwrite'); t.objectStore('items').put(it); t.oncomplete = res; });
-}
+const allItems = () => req('items', 'readonly', (s) => s.getAll()).then((r) => r || []);
+const putItem = (it) => req('items', 'readwrite', (s) => s.put(it));
+const getSettings = () => req('settings', 'readonly', (s) => s.get('prefs')).then((p) => ({ ...DEFAULTS, ...(p || {}) }));
+const putSettings = (p) => req('settings', 'readwrite', (s) => s.put(p, 'prefs'));
 
 function ago(ts) {
   const s = Math.round((Date.now() - ts) / 1000);
@@ -115,14 +155,24 @@ function card(it, clearable) {
       <a class="btn small" href="${esc(it.url)}" target="_blank" rel="noopener">Open in Claude</a></span></div></div>`;
 }
 
+let tab = store.get('tab') || 'all';
+
 async function render() {
-  const items = (await allItems()).sort((a, b) => b.ts - a.ts);
+  const everything = (await allItems()).sort((a, b) => b.ts - a.ts);
   // The newest message for each thread (key) decides where that thread sits.
-  const latest = new Map();
-  for (const it of items) { const k = it.key || it.id; if (!latest.has(k)) latest.set(k, it); }
-  const heads = [...latest.values()];
+  const headsOf = (list) => { const m = new Map(); for (const it of list) { const k = it.key || it.id; if (!m.has(k)) m.set(k, it); } return [...m.values()]; };
+  const isWaiting = (i) => (i.kind === 'wait' || i.kind === 'stuck') && !i.cleared;
+  const allWaiting = headsOf(everything).filter(isWaiting);
+
+  $('tabs').innerHTML = BRANDS.map(([id, name]) => {
+    const n = id === 'all' ? allWaiting.length : allWaiting.filter((i) => brand(i) === id).length;
+    return `<button class="tab${tab === id ? ' sel' : ''}" data-tab="${id}">${name}${n ? `<span class="c">${n}</span>` : ''}</button>`;
+  }).join('');
+
+  const items = tab === 'all' ? everything : everything.filter((i) => brand(i) === tab);
+  const heads = headsOf(items);
   const today = new Date(); today.setHours(0, 0, 0, 0);
-  const wait = heads.filter((i) => (i.kind === 'wait' || i.kind === 'stuck') && !i.cleared);
+  const wait = heads.filter(isWaiting);
   const work = heads.filter((i) => i.kind === 'work');
   const done = items.filter((i) => i.kind === 'done' && i.ts >= today.getTime());
   const fill = (el, n, list, clearable, emptyText) => {
@@ -132,17 +182,30 @@ async function render() {
   fill('wait', 'nWait', wait, true, 'Nothing needs you right now.');
   fill('work', 'nWork', work, false, 'Nothing running.');
   fill('done', 'nDone', done, false, 'Nothing finished yet today.');
-  $('all').innerHTML = items.slice(0, 100).map((i) => card(i, false)).join('') || '<div class="empty">No updates yet.</div>';
-  $('updated').textContent = items.length ? 'Last update ' + ago(items[0].ts) : "Wesley's project updates";
-  if (navigator.setAppBadge) wait.length ? navigator.setAppBadge(wait.length) : navigator.clearAppBadge();
+  $('all').innerHTML = items.slice(0, 150).map((i) => card(i, false)).join('') || '<div class="empty">No updates yet.</div>';
+  $('updated').textContent = everything.length ? 'Last update ' + ago(everything[0].ts) : "Wesley's project updates";
+  if (navigator.setAppBadge) allWaiting.length ? navigator.setAppBadge(allWaiting.length) : navigator.clearAppBadge();
 }
 
 document.addEventListener('click', async (e) => {
-  const id = e.target.dataset && e.target.dataset.clear;
-  if (!id) return;
-  const it = (await allItems()).find((i) => i.id === id);
+  const t = e.target.closest('[data-tab],[data-clear]');
+  if (!t) return;
+  if (t.dataset.tab) { tab = t.dataset.tab; store.set('tab', tab); render(); return; }
+  const it = (await allItems()).find((i) => i.id === t.dataset.clear);
   if (it) { it.cleared = true; await putItem(it); render(); }
 });
+
+// Settings: read by the service worker when a push arrives.
+async function loadSettings() {
+  const p = await getSettings();
+  $('quietOn').checked = p.quietOn; $('quietFrom').value = p.quietFrom; $('quietTo').value = p.quietTo; $('urgentRings').checked = p.urgentRings;
+}
+async function saveSettings() {
+  await putSettings({ quietOn: $('quietOn').checked, quietFrom: $('quietFrom').value || DEFAULTS.quietFrom,
+    quietTo: $('quietTo').value || DEFAULTS.quietTo, urgentRings: $('urgentRings').checked });
+}
+['quietOn', 'quietFrom', 'quietTo', 'urgentRings'].forEach((id) => $(id).addEventListener('change', saveSettings));
+$('gearBtn').onclick = () => $('settings').classList.toggle('hidden');
 
 function keyBytes(b64) {
   const s = atob(b64.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - b64.length % 4) % 4));
@@ -162,7 +225,7 @@ async function refreshSetup() {
   $('install').classList.toggle('hidden', !!standalone);
   $('enable').classList.toggle('hidden', !!sub);
   $('blocked').classList.toggle('hidden', perm !== 'denied');
-  const paired = localStorage.getItem('paired') === (sub && sub.endpoint);
+  const paired = store.get('paired') === (sub && sub.endpoint);
   $('pair').classList.toggle('hidden', !sub || paired);
   if (sub) $('code').textContent = setupCode(sub);
   $('status').textContent = sub ? 'On' : 'Off';
@@ -191,19 +254,20 @@ $('copyBtn').onclick = async () => {
 navigator.serviceWorker.addEventListener('message', (e) => {
   if (e.data === 'new') {
     // A push arrived, so the phone is paired: hide the code card.
-    reg.pushManager.getSubscription().then((s) => { if (s) localStorage.setItem('paired', s.endpoint); refreshSetup(); });
+    reg.pushManager.getSubscription().then((s) => { if (s) store.set('paired', s.endpoint); refreshSetup(); });
     render();
   }
 });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) { render(); refreshSetup(); } });
 
 (async () => {
-  reg = await navigator.serviceWorker.register('sw.js');
+  reg = await navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' });
   await navigator.serviceWorker.ready;
+  reg.update();
   const items = await allItems();
   const s = await reg.pushManager.getSubscription();
-  if (s && items.length) localStorage.setItem('paired', s.endpoint);
-  refreshSetup(); render();
+  if (s && items.length) store.set('paired', s.endpoint);
+  loadSettings(); refreshSetup(); render();
   setInterval(render, 60000);
 })();
 </script>
