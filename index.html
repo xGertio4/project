@@ -3,108 +3,216 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0f1115">
+<meta name="theme-color" content="#030504">
 <title>Assistant</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="https://d8j0ntlcm91z4.cloudfront.net/user_39lXpVmJGYmfIDH38JTzV7BC6Ww/hf_20261020_194658_a94d7728-2980-4476-b683-44e6aebf1b9b.png">
+<link rel="apple-touch-icon" href="https://d8j0ntlcm91z4.cloudfront.net/user_39lXpVmJGYmfIDH38JTzV7BC6Ww/hf_20261020_194658_a94d7728-2980-4476-b683-44e6aebf1b9b.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0f1115; --card: #181b22; --line: #262a33; --text: #eef0f4; --muted: #8b92a1;
-    --wait: #ffb020; --work: #4c9dff; --done: #35c47a; --stuck: #ff5a5a; --info: #a58bff;
+    --bg: #030504; --panel: #0a100c; --panel2: #0e1611; --line: #16261b; --text: #d7f5df; --muted: #6f8f78; --dim: #3d5a45;
+    --green: #39ff6a; --green2: #1fd456; --glow: 0 0 12px rgba(57,255,106,.35);
+    --wait: #ffc22e; --work: #39d0ff; --done: #39ff6a; --stuck: #ff4d5e; --info: #b48cff; --brief: #39ff6a;
+    --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-         padding: env(safe-area-inset-top) 16px calc(24px + env(safe-area-inset-bottom)); }
-  header { display: flex; align-items: center; justify-content: space-between; padding: 18px 0 10px; gap: 8px; }
-  h1 { font-size: 22px; margin: 0; }
-  .sub { color: var(--muted); font-size: 13px; }
-  .right { display: flex; gap: 8px; align-items: center; }
-  .pill { font-size: 12px; padding: 4px 10px; border-radius: 99px; background: var(--card); border: 1px solid var(--line); color: var(--muted); }
-  .pill.on { color: var(--done); border-color: #1f4d33; }
-  .gear { background: var(--card); border: 1px solid var(--line); border-radius: 99px; width: 34px; height: 34px; padding: 0; font-size: 16px; }
-  .tabs { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 2px; scrollbar-width: none; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { background: var(--bg); }
+  body { margin: 0; color: var(--text); font: 14px/1.45 var(--mono); min-height: 100vh;
+         padding: env(safe-area-inset-top) 16px calc(84px + env(safe-area-inset-bottom)); }
+  body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 50;
+         background: repeating-linear-gradient(0deg, rgba(57,255,106,.025) 0 1px, transparent 1px 3px); }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 0; }
+
+  header { display: flex; align-items: center; gap: 12px; padding: 18px 0 8px; }
+  .logo { width: 46px; height: 46px; border-radius: 12px; border: 1px solid var(--line); box-shadow: var(--glow); object-fit: cover; background: #000; }
+  .hello { flex: 1; min-width: 0; }
+  .hello .k { font-size: 11px; color: var(--green); letter-spacing: .18em; text-transform: uppercase; }
+  .hello h1 { margin: 2px 0 0; font-size: 19px; font-weight: 800; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hello .sub { color: var(--muted); font-size: 11px; margin-top: 2px; }
+  .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--dim); margin-right: 6px; vertical-align: 1px; }
+  .dot.on { background: var(--green); box-shadow: var(--glow); animation: pulse 2.4s infinite; }
+  @keyframes pulse { 50% { opacity: .35; } }
+  .cursor::after { content: "▌"; color: var(--green); animation: blink 1s steps(1) infinite; margin-left: 2px; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0 4px; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; text-align: left; }
+  .stat b { display: block; font-size: 22px; font-weight: 800; line-height: 1.1; }
+  .stat span { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .12em; }
+  .stat.w b { color: var(--wait); } .stat.r b { color: var(--work); } .stat.d b { color: var(--done); }
+
+  .tabs { display: flex; gap: 6px; overflow-x: auto; padding: 10px 0 2px; scrollbar-width: none; }
   .tabs::-webkit-scrollbar { display: none; }
-  .tab { flex: none; font-size: 13px; padding: 7px 12px; border-radius: 99px; background: var(--card); border: 1px solid var(--line); color: var(--muted); }
-  .tab.sel { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 600; }
-  .tab .c { opacity: .7; margin-left: 4px; }
+  .tab { flex: none; font-size: 12px; padding: 6px 11px; border-radius: 99px; background: var(--panel); border: 1px solid var(--line); color: var(--muted); }
+  .tab.sel { color: var(--bg); background: var(--green); border-color: var(--green); font-weight: 800; }
+  .tab .c { margin-left: 5px; opacity: .75; }
+
   section { margin-top: 18px; }
-  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 8px; display: flex; gap: 8px; align-items: center; }
-  h2 .n { background: var(--card); border-radius: 99px; padding: 0 8px; font-size: 12px; }
-  .item { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--c, var(--info)); border-radius: 12px;
-          padding: 12px 12px 10px; margin-bottom: 8px; }
-  .item .t { font-weight: 600; }
-  .item .b { color: #cfd3dc; margin-top: 3px; white-space: pre-wrap; word-break: break-word; }
-  .item .m { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 12px; color: var(--muted); gap: 8px; }
-  .item .acts { display: flex; gap: 6px; }
-  button, .btn { font: inherit; border: 0; border-radius: 10px; padding: 8px 12px; background: #2a2f3a; color: var(--text); cursor: pointer; text-decoration: none; }
-  .btn.small { padding: 5px 10px; font-size: 12px; }
-  .btn.primary { background: var(--work); color: #fff; font-weight: 600; padding: 14px 16px; width: 100%; font-size: 16px; }
-  .empty { color: var(--muted); font-size: 13px; padding: 4px 2px 8px; }
-  .setup { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-top: 12px; }
-  .setup p { margin: 0 0 12px; color: #cfd3dc; }
-  .code { font: 12px/1.3 ui-monospace, monospace; background: #0b0d11; border: 1px solid var(--line); border-radius: 8px; padding: 10px;
-          word-break: break-all; max-height: 92px; overflow: auto; margin-bottom: 10px; color: var(--muted); }
-  .k-wait { --c: var(--wait); } .k-work { --c: var(--work); } .k-done { --c: var(--done); } .k-stuck { --c: var(--stuck); } .k-info { --c: var(--info); }
-  .tag { font-size: 11px; font-weight: 600; color: var(--c); text-transform: uppercase; letter-spacing: .05em; }
-  details summary { color: var(--muted); font-size: 13px; cursor: pointer; margin: 4px 0 8px; }
-  .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
-  .row:first-of-type { border-top: 0; }
-  .row label { flex: 1; }
-  .row .hint { display: block; color: var(--muted); font-size: 12px; }
-  input[type=time] { font: inherit; background: #0b0d11; color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; color-scheme: dark; }
-  input[type=checkbox] { width: 22px; height: 22px; accent-color: var(--work); }
-  .hidden { display: none; }
+  h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .16em; color: var(--muted); margin: 0 0 8px; display: flex; gap: 8px; align-items: center; }
+  h2::before { content: "//"; color: var(--green); }
+  h2 .n { margin-left: auto; color: var(--dim); }
+  .empty { color: var(--dim); font-size: 12px; padding: 4px 2px 6px; }
+
+  .item { position: relative; background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--c, var(--info));
+          border-radius: 12px; padding: 11px 12px 10px; margin-bottom: 8px; touch-action: pan-y; transition: transform .18s, opacity .18s; }
+  .item.unread { background: var(--panel2); }
+  .item.unread::after { content: ""; position: absolute; top: 12px; right: 12px; width: 7px; height: 7px; border-radius: 50%; background: var(--c); box-shadow: 0 0 8px var(--c); }
+  .item .tag { font-size: 10px; font-weight: 800; color: var(--c); text-transform: uppercase; letter-spacing: .12em; padding-right: 16px; }
+  .item .t { font-weight: 600; margin-top: 2px; }
+  .item .b { color: #a9c9b1; margin-top: 3px; font-size: 13px; white-space: pre-wrap; word-break: break-word;
+             display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .item .m { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 11px; color: var(--muted); gap: 8px; }
+  .acts { display: flex; gap: 6px; }
+  .btn { display: inline-block; font-size: 11px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background: #0c140f; color: var(--text); text-decoration: none; }
+  .btn.g { border-color: #1d4a2a; color: var(--green); }
+  .btn.x { color: var(--muted); }
+  .btn.big { display: block; width: 100%; text-align: center; padding: 13px; font-size: 14px; font-weight: 800; background: var(--green); color: #021006; border: 0; border-radius: 12px; box-shadow: var(--glow); }
+  .btn.ghost { display: block; width: 100%; text-align: center; padding: 11px; font-size: 13px; }
+  .k-wait { --c: var(--wait); } .k-work { --c: var(--work); } .k-done { --c: var(--done); } .k-stuck { --c: var(--stuck); } .k-info { --c: var(--info); } .k-brief { --c: var(--brief); }
+
+  .brief { background: linear-gradient(160deg, #0b1a10, #050a07); border: 1px solid #1d4a2a; border-radius: 14px; padding: 14px; margin-top: 14px; box-shadow: inset 0 0 30px rgba(57,255,106,.05); }
+  .brief .tag { color: var(--green); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; font-weight: 800; }
+  .brief .t { font-weight: 800; font-size: 15px; margin: 4px 0 6px; }
+  .brief .b { white-space: pre-wrap; color: #bfe6c9; font-size: 13px; }
+
+  .search { width: 100%; font: inherit; font-size: 13px; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; outline: none; }
+  .search:focus { border-color: #1d4a2a; box-shadow: var(--glow); }
+  .row2 { display: flex; gap: 8px; margin-top: 10px; }
+  .row2 .btn { flex: 1; text-align: center; padding: 9px; }
+
+  .thread { display: flex; align-items: center; gap: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; margin-bottom: 8px; }
+  .thread .info { flex: 1; min-width: 0; }
+  .thread .name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .thread .st { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .thread .st b { color: var(--c); font-weight: 800; text-transform: uppercase; letter-spacing: .08em; font-size: 10px; }
+
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-top: 12px; }
+  .card p { margin: 0 0 12px; color: #bfe6c9; font-size: 13px; }
+  .card .hint { color: var(--muted); font-size: 12px; margin: 10px 0 0; }
+  .set { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 11px 0; border-top: 1px solid var(--line); }
+  .set:first-child { border-top: 0; padding-top: 0; }
+  .set label { flex: 1; }
+  .set .hint { display: block; margin: 2px 0 0; }
+  input[type=time] { font: inherit; background: #050906; color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; color-scheme: dark; }
+  input[type=checkbox] { width: 22px; height: 22px; accent-color: var(--green); }
+  .code { font-size: 11px; background: #020302; border: 1px solid var(--line); border-radius: 8px; padding: 10px; word-break: break-all; max-height: 84px; overflow: auto; margin-bottom: 10px; color: var(--muted); }
+
+  nav.bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: grid; grid-template-columns: repeat(4, 1fr);
+            background: rgba(3,5,4,.94); backdrop-filter: blur(8px); border-top: 1px solid var(--line); padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); }
+  nav.bar button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0; color: var(--muted); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; position: relative; }
+  nav.bar button svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  nav.bar button.sel { color: var(--green); text-shadow: var(--glow); }
+  nav.bar .pip { position: absolute; top: 2px; left: calc(50% + 6px); min-width: 16px; height: 16px; border-radius: 99px; background: var(--wait); color: #1a1200; font-size: 10px; font-weight: 800; line-height: 16px; text-align: center; padding: 0 4px; letter-spacing: 0; }
+  .view { display: none; } .view.on { display: block; }
+
+  .sheet-bg { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 60; display: none; }
+  .sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 61; background: #07100a; border-top: 1px solid #1d4a2a; border-radius: 18px 18px 0 0;
+           padding: 18px 16px calc(18px + env(safe-area-inset-bottom)); max-height: 82vh; overflow: auto; transform: translateY(105%); transition: transform .22s ease; box-shadow: 0 -10px 40px rgba(57,255,106,.08); }
+  .sheet.on { transform: none; } .sheet-bg.on { display: block; }
+  .sheet .grab { width: 40px; height: 4px; border-radius: 4px; background: var(--dim); margin: -6px auto 12px; }
+  .sheet .tag { font-size: 10px; font-weight: 800; color: var(--c); text-transform: uppercase; letter-spacing: .14em; }
+  .sheet h3 { margin: 4px 0 8px; font-size: 17px; }
+  .sheet .b { white-space: pre-wrap; word-break: break-word; color: #bfe6c9; }
+  .sheet .meta { color: var(--muted); font-size: 11px; margin: 10px 0 14px; }
+  .sheet .stack { display: grid; gap: 8px; }
+
+  .toast { position: fixed; left: 50%; bottom: calc(86px + env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(20px); opacity: 0; z-index: 70;
+           background: #0b1a10; border: 1px solid #1d4a2a; color: var(--green); padding: 9px 14px; border-radius: 10px; font-size: 12px; transition: all .2s; pointer-events: none; white-space: nowrap; }
+  .toast.on { opacity: 1; transform: translateX(-50%); }
+  .hidden { display: none !important; }
 </style>
 </head>
 <body>
 <header>
-  <div><h1>Assistant</h1><div class="sub" id="updated">Wesley's project updates</div></div>
-  <div class="right"><span class="pill" id="status">Off</span><button class="gear" id="gearBtn" aria-label="Settings">⚙</button></div>
+  <img class="logo" id="logo" alt="" src="https://d8j0ntlcm91z4.cloudfront.net/user_39lXpVmJGYmfIDH38JTzV7BC6Ww/hf_20261020_194658_a94d7728-2980-4476-b683-44e6aebf1b9b.png" onerror="this.src='icon-192.png'">
+  <div class="hello">
+    <div class="k">Uesli A.I Work</div>
+    <h1 class="cursor" id="greet">Good evening, Boss Wesley</h1>
+    <div class="sub"><span class="dot" id="dot"></span><span id="link">Uplink offline</span> · <span id="updated">no updates yet</span></div>
+  </div>
 </header>
 
-<div class="setup hidden" id="settings">
-  <div class="row"><label for="quietOn">Quiet hours<span class="hint">Updates still arrive, just without sound or vibration.</span></label><input type="checkbox" id="quietOn"></div>
-  <div class="row"><label>From</label><input type="time" id="quietFrom"></div>
-  <div class="row"><label>To</label><input type="time" id="quietTo"></div>
-  <div class="row"><label for="urgentRings">"Needs you" still rings<span class="hint">During quiet hours, things waiting on you still make a sound.</span></label><input type="checkbox" id="urgentRings"></div>
-  <div class="row"><span class="hint">Morning summary arrives every day at about 08:10.</span></div>
+<!-- HOME -->
+<div class="view on" id="v-home">
+  <div class="stats">
+    <button class="stat w" data-go="feed" data-filter="wait"><b id="sWait">0</b><span>Need you</span></button>
+    <button class="stat r" data-go="feed" data-filter="work"><b id="sWork">0</b><span>Running</span></button>
+    <button class="stat d" data-go="feed" data-filter="done"><b id="sDone">0</b><span>Done today</span></button>
+  </div>
+  <div id="setup"></div>
+  <div id="briefBox"></div>
+  <section><h2>Waiting on you <span class="n" id="nWait"></span></h2><div id="wait"></div></section>
+  <section><h2>Working now <span class="n" id="nWork"></span></h2><div id="work"></div></section>
+  <section><h2>Done today <span class="n" id="nDone"></span></h2><div id="done"></div></section>
 </div>
 
-<div class="setup hidden" id="install">
-  <p><b>Put this on your home screen</b> so it opens like an app. Notifications already work without it.</p>
-  <button class="btn primary" id="installBtn">Install app</button>
-  <p class="sub hidden" id="installHint" style="margin:10px 0 0">If you opened this from Claude, tap ⋮ (top right) then <b>Open in Chrome</b> first. In Chrome tap ⋮ then <b>Add to Home screen</b>, then <b>Install</b>, and open it from the new icon.</p>
+<!-- FEED -->
+<div class="view" id="v-feed">
+  <input class="search" id="q" type="search" placeholder="> search updates" autocomplete="off">
+  <nav class="tabs" id="kinds"></nav>
+  <nav class="tabs" id="brands" style="padding-top:4px"></nav>
+  <div class="row2"><button class="btn x" id="readAll">Mark all read</button><button class="btn x" id="clearDone">Delete done</button><button class="btn x" id="clearAll">Delete all</button></div>
+  <section><h2>Updates <span class="n" id="nFeed"></span></h2><div id="feed"></div></section>
 </div>
 
-<div class="setup hidden" id="enable">
-  <p><b>Turn on notifications</b> so every update from Claude lands on your lock screen.</p>
-  <button class="btn primary" id="enableBtn">Turn on notifications</button>
-  <p class="sub hidden" id="blocked" style="margin:10px 0 0">Notifications are blocked for this app. Long-press the app icon, tap ⓘ App info, then Notifications, and allow them.</p>
+<!-- THREADS -->
+<div class="view" id="v-threads">
+  <section style="margin-top:12px"><h2>Threads <span class="n" id="nThreads"></span></h2><div id="threads"></div></section>
+  <a class="btn ghost g" id="projBtn" target="_blank" rel="noopener">Open Uesli A.I Work in Claude</a>
 </div>
 
-<div class="setup hidden" id="pair">
-  <p><b>Last step.</b> Copy this code and paste it in the <b>Phone assistant app</b> thread in Claude. Claude then sends you a test.</p>
-  <div class="code" id="code"></div>
-  <button class="btn primary" id="copyBtn">Copy code</button>
+<!-- SETTINGS -->
+<div class="view" id="v-settings">
+  <div class="card">
+    <div class="set"><label for="quietOn">Quiet hours<span class="hint">Updates still arrive, just without sound or vibration.</span></label><input type="checkbox" id="quietOn"></div>
+    <div class="set"><label>From</label><input type="time" id="quietFrom"></div>
+    <div class="set"><label>To</label><input type="time" id="quietTo"></div>
+    <div class="set"><label for="urgentRings">"Needs you" still rings<span class="hint">Things waiting on you make a sound even in quiet hours.</span></label><input type="checkbox" id="urgentRings"></div>
+  </div>
+  <div class="card">
+    <p><b>Briefs</b></p>
+    <p style="margin:0">07:00 · Good morning, Boss Wesley: what needs you, what's running, what finished overnight.<br>23:00 · Goodnight, Boss Wesley: today's wins and what's still open.<br>Briefs always ring.</p>
+  </div>
+  <div class="card">
+    <p><b>No sound on your Samsung?</b></p>
+    <p style="margin:0">Settings → Notifications → App notifications → Chrome (or Assistant) → Notification categories → xgertio4.github.io → <b>Alert</b>, and pick a sound. Also turn off Settings → Notifications → Advanced settings → Notification cooldown.</p>
+  </div>
+  <div class="card" id="pairCard">
+    <p><b>Connection</b></p>
+    <p style="margin:0 0 10px" id="pairText">Checking…</p>
+    <div class="code hidden" id="code"></div>
+    <button class="btn big hidden" id="enableBtn">Turn on notifications</button>
+    <button class="btn ghost g hidden" id="copyBtn">Copy setup code</button>
+    <button class="btn ghost g hidden" id="installBtn" style="margin-top:8px">Install on home screen</button>
+    <p class="hint hidden" id="installHint">If this opened inside Claude, tap ⋮ then Open in Chrome first. In Chrome: ⋮ → Add to Home screen → Install.</p>
+  </div>
+  <p class="hint" style="text-align:center;color:var(--dim);font-size:11px;margin:16px 0">assistant v3 · built by Claude for Boss Wesley</p>
 </div>
 
-<nav class="tabs" id="tabs"></nav>
+<nav class="bar">
+  <button data-go="home" class="sel"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>Home<span class="pip hidden" id="pip"></span></button>
+  <button data-go="feed"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Feed</button>
+  <button data-go="threads"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Threads</button>
+  <button data-go="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Settings</button>
+</nav>
 
-<main id="feed">
-  <section><h2>Waiting on you <span class="n" id="nWait">0</span></h2><div id="wait"></div></section>
-  <section><h2>Working now <span class="n" id="nWork">0</span></h2><div id="work"></div></section>
-  <section><h2>Done today <span class="n" id="nDone">0</span></h2><div id="done"></div></section>
-  <section><details><summary>All updates</summary><div id="all"></div></details></section>
-</main>
+<div class="sheet-bg" id="sheetBg"></div>
+<div class="sheet" id="sheet"></div>
+<div class="toast" id="toast"></div>
 
 <script>
 const VAPID_PUBLIC = 'BM25jzjsJccjy-p0j1Y2CgK4pGlkiOvg3jjIswlbcjnwOh1Lc79ixRIGS10OZGA5cvi2Iplt5HDNxXx6F79K-Zk';
-const LABEL = { wait: 'Needs you', work: 'Started', done: 'Done', stuck: 'Stuck', info: 'Update' };
+const PROJECT_URL = 'https://claude.ai/code/project/chan_018RSN8eBbdhCb2VDwseegbT';
+const LABEL = { wait: 'Needs you', work: 'Started', done: 'Done', stuck: 'Stuck', info: 'Update', brief: 'Brief' };
 const BRANDS = [['all', 'All'], ['besa', 'Besa'], ['marsilda', 'Marsilda'], ['bp', 'Balkan Power'], ['other', 'Other']];
+const KINDS = [['all', 'All'], ['wait', 'Needs you'], ['work', 'Running'], ['done', 'Done'], ['brief', 'Briefs'], ['info', 'Other']];
 const DEFAULTS = { quietOn: true, quietFrom: '23:00', quietTo: '08:00', urgentRings: true };
 const $ = (id) => document.getElementById(id);
 const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
+$('projBtn').href = PROJECT_URL;
 
 // Same keyword map as notify.mjs, for updates that arrive without a brand.
 function brandOf(text) {
@@ -115,7 +223,7 @@ function brandOf(text) {
 }
 const brand = (it) => it.brand || brandOf(`${it.key || ''} ${it.title || ''}`);
 
-// Same IndexedDB the service worker writes to.
+// ---- Storage shared with the service worker ----
 function db() {
   return new Promise((res, rej) => {
     const r = indexedDB.open('assistant', 2);
@@ -132,70 +240,180 @@ function req(name, mode, fn) {
     t.oncomplete = () => res(q && q.result); t.onerror = () => res(undefined);
   }));
 }
-const allItems = () => req('items', 'readonly', (s) => s.getAll()).then((r) => r || []);
+const allItems = () => req('items', 'readonly', (s) => s.getAll()).then((r) => (r || []).sort((a, b) => b.ts - a.ts));
 const putItem = (it) => req('items', 'readwrite', (s) => s.put(it));
+const delItems = (ids) => req('items', 'readwrite', (s) => { ids.forEach((id) => s.delete(id)); });
 const getSettings = () => req('settings', 'readonly', (s) => s.get('prefs')).then((p) => ({ ...DEFAULTS, ...(p || {}) }));
 const putSettings = (p) => req('settings', 'readwrite', (s) => s.put(p, 'prefs'));
 
+// ---- Helpers ----
 function ago(ts) {
   const s = Math.round((Date.now() - ts) / 1000);
   if (s < 60) return 'just now';
-  if (s < 3600) return Math.floor(s / 60) + ' min ago';
-  if (s < 86400) return Math.floor(s / 3600) + ' h ago';
+  if (s < 3600) return Math.floor(s / 60) + 'm ago';
+  if (s < 86400) return Math.floor(s / 3600) + 'h ago';
   return new Date(ts).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 }
+const clock = (ts) => new Date(ts).toLocaleString(undefined, { weekday: 'short', hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' });
 function esc(s) { return String(s || '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 1800); }
+function greeting() {
+  const h = new Date().getHours();
+  return h < 5 ? 'Late shift, Boss Wesley' : h < 12 ? 'Good morning, Boss Wesley' : h < 18 ? 'Good afternoon, Boss Wesley' : h < 23 ? 'Good evening, Boss Wesley' : 'Late shift, Boss Wesley';
+}
+const headsOf = (list) => { const m = new Map(); for (const it of list) { const k = it.key || it.id; if (!m.has(k)) m.set(k, it); } return [...m.values()]; };
+const isWaiting = (i) => (i.kind === 'wait' || i.kind === 'stuck') && !i.cleared;
+const hasThread = (it) => /[?&]thread=/.test(it.url || '');
 
-function card(it, clearable) {
-  return `<div class="item k-${esc(it.kind)}">
+function card(it, opts = {}) {
+  return `<div class="item k-${esc(it.kind)}${it.read ? '' : ' unread'}" data-open="${esc(it.id)}">
     <div class="tag">${LABEL[it.kind] || 'Update'}${it.key ? ' · ' + esc(it.key) : ''}</div>
     <div class="t">${esc(it.title)}</div>${it.body ? `<div class="b">${esc(it.body)}</div>` : ''}
     <div class="m"><span>${ago(it.ts)}</span><span class="acts">
-      ${clearable ? `<button class="btn small" data-clear="${esc(it.id)}">Handled</button>` : ''}
-      <a class="btn small" href="${esc(it.url)}" target="_blank" rel="noopener">Open in Claude</a></span></div></div>`;
+      ${opts.handled && isWaiting(it) ? `<button class="btn g" data-handled="${esc(it.id)}">Handled</button>` : ''}
+      <button class="btn x" data-del="${esc(it.id)}">Delete</button></span></div></div>`;
 }
 
-let tab = store.get('tab') || 'all';
+// ---- State ----
+let items = [];
+let view = 'home';
+let kindFilter = 'all';
+let brandFilter = store.get('brand') || 'all';
+let query = '';
 
-async function render() {
-  const everything = (await allItems()).sort((a, b) => b.ts - a.ts);
-  // The newest message for each thread (key) decides where that thread sits.
-  const headsOf = (list) => { const m = new Map(); for (const it of list) { const k = it.key || it.id; if (!m.has(k)) m.set(k, it); } return [...m.values()]; };
-  const isWaiting = (i) => (i.kind === 'wait' || i.kind === 'stuck') && !i.cleared;
-  const allWaiting = headsOf(everything).filter(isWaiting);
+async function load() { items = await allItems(); render(); }
 
-  $('tabs').innerHTML = BRANDS.map(([id, name]) => {
-    const n = id === 'all' ? allWaiting.length : allWaiting.filter((i) => brand(i) === id).length;
-    return `<button class="tab${tab === id ? ' sel' : ''}" data-tab="${id}">${name}${n ? `<span class="c">${n}</span>` : ''}</button>`;
-  }).join('');
-
-  const items = tab === 'all' ? everything : everything.filter((i) => brand(i) === tab);
-  const heads = headsOf(items);
+function render() {
+  $('greet').textContent = greeting();
+  $('updated').textContent = items.length ? 'last ping ' + ago(items[0].ts) : 'no updates yet';
+  const heads = headsOf(items.filter((i) => i.kind !== 'brief'));
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const wait = heads.filter(isWaiting);
   const work = heads.filter((i) => i.kind === 'work');
   const done = items.filter((i) => i.kind === 'done' && i.ts >= today.getTime());
-  const fill = (el, n, list, clearable, emptyText) => {
-    $(n).textContent = list.length;
-    $(el).innerHTML = list.length ? list.map((i) => card(i, clearable)).join('') : `<div class="empty">${emptyText}</div>`;
+  $('sWait').textContent = wait.length; $('sWork').textContent = work.length; $('sDone').textContent = done.length;
+  $('pip').textContent = wait.length; $('pip').classList.toggle('hidden', !wait.length);
+  if (navigator.setAppBadge) wait.length ? navigator.setAppBadge(wait.length) : navigator.clearAppBadge();
+
+  // Home
+  const brief = items.find((i) => i.kind === 'brief');
+  $('briefBox').innerHTML = brief ? `<div class="brief" data-open="${esc(brief.id)}"><div class="tag">${esc(brief.key || 'Brief')} · ${ago(brief.ts)}</div><div class="t">${esc(brief.title)}</div><div class="b">${esc(brief.body)}</div></div>` : '';
+  const fill = (el, n, list, emptyText, opts) => {
+    $(n).textContent = list.length || '';
+    $(el).innerHTML = list.length ? list.slice(0, 12).map((i) => card(i, opts)).join('') : `<div class="empty">${emptyText}</div>`;
   };
-  fill('wait', 'nWait', wait, true, 'Nothing needs you right now.');
-  fill('work', 'nWork', work, false, 'Nothing running.');
-  fill('done', 'nDone', done, false, 'Nothing finished yet today.');
-  $('all').innerHTML = items.slice(0, 150).map((i) => card(i, false)).join('') || '<div class="empty">No updates yet.</div>';
-  $('updated').textContent = everything.length ? 'Last update ' + ago(everything[0].ts) : "Wesley's project updates";
-  if (navigator.setAppBadge) allWaiting.length ? navigator.setAppBadge(allWaiting.length) : navigator.clearAppBadge();
+  fill('wait', 'nWait', wait, '> nothing needs you right now', { handled: true });
+  fill('work', 'nWork', work, '> nothing running');
+  fill('done', 'nDone', done, '> nothing finished yet today');
+
+  // Feed
+  $('kinds').innerHTML = KINDS.map(([id, name]) => `<button class="tab${kindFilter === id ? ' sel' : ''}" data-kind="${id}">${name}</button>`).join('');
+  $('brands').innerHTML = BRANDS.map(([id, name]) => {
+    const n = id === 'all' ? wait.length : wait.filter((i) => brand(i) === id).length;
+    return `<button class="tab${brandFilter === id ? ' sel' : ''}" data-brand="${id}">${name}${n ? `<span class="c">${n}</span>` : ''}</button>`;
+  }).join('');
+  const q = query.toLowerCase();
+  const feed = items.filter((i) =>
+    (brandFilter === 'all' || brand(i) === brandFilter) &&
+    (kindFilter === 'all' || (kindFilter === 'wait' ? i.kind === 'wait' || i.kind === 'stuck' : i.kind === kindFilter)) &&
+    (!q || `${i.title} ${i.body} ${i.key}`.toLowerCase().includes(q)));
+  $('nFeed').textContent = feed.length || '';
+  $('feed').innerHTML = feed.slice(0, 200).map((i) => card(i, { handled: true })).join('') || '<div class="empty">> no updates match</div>';
+
+  // Threads
+  const threads = headsOf(items.filter((i) => i.key && i.kind !== 'brief'));
+  $('nThreads').textContent = threads.length || '';
+  $('threads').innerHTML = threads.map((t) => {
+    const withLink = items.find((i) => i.key === t.key && hasThread(i));
+    const count = items.filter((i) => i.key === t.key).length;
+    return `<div class="thread k-${esc(t.kind)}"><div class="info" data-thread="${esc(t.key)}"><div class="name">${esc(t.key)}</div>
+      <div class="st"><b>${LABEL[t.kind] || 'Update'}</b> · ${ago(t.ts)} · ${count} update${count === 1 ? '' : 's'}</div></div>
+      <a class="btn g" href="${esc(withLink ? withLink.url : PROJECT_URL)}" target="_blank" rel="noopener">Open</a></div>`;
+  }).join('') || '<div class="empty">> threads show up here as updates arrive</div>';
+}
+
+// ---- Detail sheet ----
+async function openItem(id) {
+  const it = items.find((i) => i.id === id);
+  if (!it) return;
+  if (!it.read) { it.read = true; await putItem(it); }
+  const s = $('sheet');
+  s.className = `sheet k-${it.kind}`;
+  s.innerHTML = `<div class="grab"></div><div class="tag">${LABEL[it.kind] || 'Update'}${it.key ? ' · ' + esc(it.key) : ''}</div>
+    <h3>${esc(it.title)}</h3>${it.body ? `<div class="b">${esc(it.body)}</div>` : ''}
+    <div class="meta">${clock(it.ts)} · ${({ besa: 'Besa', marsilda: 'Marsilda', bp: 'Balkan Power', other: 'Other' })[brand(it)]}</div>
+    <div class="stack">
+      <a class="btn big" href="${esc(it.url || PROJECT_URL)}" target="_blank" rel="noopener">${hasThread(it) ? 'Open this thread in Claude' : 'Open Uesli A.I Work in Claude'}</a>
+      ${isWaiting(it) ? `<button class="btn ghost g" data-handled="${esc(it.id)}">Mark handled</button>` : ''}
+      ${it.key ? `<button class="btn ghost" data-thread="${esc(it.key)}">All updates from this thread</button>` : ''}
+      <button class="btn ghost x" data-del="${esc(it.id)}">Delete</button>
+    </div>`;
+  requestAnimationFrame(() => { s.classList.add('on'); $('sheetBg').classList.add('on'); });
+  render();
+}
+function closeSheet() { $('sheet').classList.remove('on'); $('sheetBg').classList.remove('on'); }
+$('sheetBg').onclick = closeSheet;
+
+function go(v) {
+  view = v;
+  document.querySelectorAll('.view').forEach((el) => el.classList.toggle('on', el.id === 'v-' + v));
+  document.querySelectorAll('nav.bar button').forEach((b) => b.classList.toggle('sel', b.dataset.go === v));
+  scrollTo(0, 0);
+}
+
+async function removeIds(ids) {
+  await delItems(ids);
+  // Also take them off the lock screen.
+  const reg = await navigator.serviceWorker.ready;
+  for (const n of await reg.getNotifications()) if (ids.includes(n.data && n.data.id)) n.close();
+  await load();
 }
 
 document.addEventListener('click', async (e) => {
-  const t = e.target.closest('[data-tab],[data-clear]');
+  const t = e.target.closest('[data-go],[data-kind],[data-brand],[data-del],[data-handled],[data-thread],[data-open]');
   if (!t) return;
-  if (t.dataset.tab) { tab = t.dataset.tab; store.set('tab', tab); render(); return; }
-  const it = (await allItems()).find((i) => i.id === t.dataset.clear);
-  if (it) { it.cleared = true; await putItem(it); render(); }
+  const d = t.dataset;
+  if (d.go) { if (d.filter) { kindFilter = d.filter; brandFilter = 'all'; query = ''; $('q').value = ''; render(); } go(d.go); return; }
+  if (d.kind) { kindFilter = d.kind; render(); return; }
+  if (d.brand) { brandFilter = d.brand; store.set('brand', brandFilter); render(); return; }
+  if (d.del) { e.stopPropagation(); closeSheet(); await removeIds([d.del]); toast('Deleted'); return; }
+  if (d.handled) {
+    e.stopPropagation();
+    const it = items.find((i) => i.id === d.handled);
+    if (it) { it.cleared = true; it.read = true; await putItem(it); }
+    closeSheet(); await load(); toast('Handled'); return;
+  }
+  if (d.thread) { closeSheet(); query = d.thread; $('q').value = d.thread; kindFilter = 'all'; brandFilter = 'all'; render(); go('feed'); return; }
+  if (d.open) openItem(d.open);
 });
 
-// Settings: read by the service worker when a push arrives.
+$('q').addEventListener('input', (e) => { query = e.target.value; render(); });
+$('readAll').onclick = async () => { for (const it of items.filter((i) => !i.read)) { it.read = true; await putItem(it); } await load(); toast('All read'); };
+$('clearDone').onclick = async () => {
+  const ids = items.filter((i) => i.kind === 'done' || i.kind === 'info' || i.kind === 'brief' || i.cleared).map((i) => i.id);
+  if (ids.length && confirm(`Delete ${ids.length} finished update${ids.length === 1 ? '' : 's'}?`)) { await removeIds(ids); toast('Cleaned up'); }
+};
+$('clearAll').onclick = async () => {
+  if (items.length && confirm(`Delete all ${items.length} updates?`)) { await removeIds(items.map((i) => i.id)); toast('Feed cleared'); }
+};
+
+// Swipe an update left to delete it.
+let sx = 0, sy = 0, sel = null;
+document.addEventListener('touchstart', (e) => { sel = e.target.closest('.item'); if (sel) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; } }, { passive: true });
+document.addEventListener('touchmove', (e) => {
+  if (!sel) return;
+  const dx = e.touches[0].clientX - sx; const dy = e.touches[0].clientY - sy;
+  if (Math.abs(dy) > Math.abs(dx)) return;
+  if (dx < 0) { sel.style.transform = `translateX(${dx}px)`; sel.style.opacity = String(Math.max(.25, 1 + dx / 300)); }
+}, { passive: true });
+document.addEventListener('touchend', async (e) => {
+  if (!sel) return;
+  const dx = e.changedTouches[0].clientX - sx; const el = sel; sel = null;
+  if (dx < -110) { el.style.transform = 'translateX(-120%)'; el.style.opacity = '0'; await removeIds([el.dataset.open]); toast('Deleted'); }
+  else { el.style.transform = ''; el.style.opacity = ''; }
+});
+
+// ---- Settings ----
 async function loadSettings() {
   const p = await getSettings();
   $('quietOn').checked = p.quietOn; $('quietFrom').value = p.quietFrom; $('quietTo').value = p.quietTo; $('urgentRings').checked = p.urgentRings;
@@ -203,10 +421,11 @@ async function loadSettings() {
 async function saveSettings() {
   await putSettings({ quietOn: $('quietOn').checked, quietFrom: $('quietFrom').value || DEFAULTS.quietFrom,
     quietTo: $('quietTo').value || DEFAULTS.quietTo, urgentRings: $('urgentRings').checked });
+  toast('Saved');
 }
 ['quietOn', 'quietFrom', 'quietTo', 'urgentRings'].forEach((id) => $(id).addEventListener('change', saveSettings));
-$('gearBtn').onclick = () => $('settings').classList.toggle('hidden');
 
+// ---- Push setup ----
 function keyBytes(b64) {
   const s = atob(b64.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - b64.length % 4) % 4));
   return Uint8Array.from(s, (c) => c.charCodeAt(0));
@@ -222,14 +441,21 @@ async function refreshSetup() {
   const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
   const perm = 'Notification' in window ? Notification.permission : 'denied';
   const sub = reg && await reg.pushManager.getSubscription();
-  $('install').classList.toggle('hidden', !!standalone);
-  $('enable').classList.toggle('hidden', !!sub);
-  $('blocked').classList.toggle('hidden', perm !== 'denied');
+  $('dot').classList.toggle('on', !!sub && perm === 'granted');
+  $('link').textContent = sub && perm === 'granted' ? 'Uplink online' : 'Uplink offline';
+  $('enableBtn').classList.toggle('hidden', !!sub && perm === 'granted');
+  $('installBtn').classList.toggle('hidden', !!standalone);
   const paired = store.get('paired') === (sub && sub.endpoint);
-  $('pair').classList.toggle('hidden', !sub || paired);
+  $('copyBtn').classList.toggle('hidden', !sub);
+  $('code').classList.toggle('hidden', !sub || paired);
   if (sub) $('code').textContent = setupCode(sub);
-  $('status').textContent = sub ? 'On' : 'Off';
-  $('status').classList.toggle('on', !!sub);
+  $('pairText').textContent = perm === 'denied' ? 'Notifications are blocked. Long-press the app icon → App info → Notifications → allow.'
+    : !sub ? 'Not connected yet. Turn on notifications, then paste the setup code in the Phone assistant app thread.'
+    : paired ? 'Connected to Uesli A.I Work. Updates reach your lock screen.'
+    : 'Almost there: copy the setup code and paste it in the Phone assistant app thread.';
+  // A setup card on Home only while something is missing.
+  $('setup').innerHTML = !sub || perm !== 'granted'
+    ? `<div class="card"><p><b>Uplink offline.</b> Turn on notifications so Claude can reach you.</p><button class="btn big" data-go="settings">Set up</button></div>` : '';
 }
 
 let deferredInstall;
@@ -240,34 +466,34 @@ $('installBtn').onclick = async () => {
 };
 $('enableBtn').onclick = async () => {
   const perm = await Notification.requestPermission();
-  if (perm !== 'granted') { $('blocked').classList.remove('hidden'); return; }
-  await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(VAPID_PUBLIC) });
+  if (perm === 'granted') await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(VAPID_PUBLIC) });
   refreshSetup();
 };
 $('copyBtn').onclick = async () => {
-  const text = $('code').textContent;
-  try { await navigator.clipboard.writeText(text); }
-  catch { const r = document.createRange(); r.selectNodeContents($('code')); getSelection().removeAllRanges(); getSelection().addRange(r); document.execCommand('copy'); }
-  $('copyBtn').textContent = 'Copied. Paste it in Claude';
+  const sub = await reg.pushManager.getSubscription();
+  const text = setupCode(sub);
+  try { await navigator.clipboard.writeText(text); toast('Copied. Paste it in Claude'); }
+  catch { $('code').classList.remove('hidden'); toast('Long-press the code to copy'); }
 };
 
 navigator.serviceWorker.addEventListener('message', (e) => {
-  if (e.data === 'new') {
-    // A push arrived, so the phone is paired: hide the code card.
-    reg.pushManager.getSubscription().then((s) => { if (s) store.set('paired', s.endpoint); refreshSetup(); });
-    render();
-  }
+  const m = e.data || {};
+  if (m.type === 'new') reg.pushManager.getSubscription().then((s) => { if (s) store.set('paired', s.endpoint); refreshSetup(); });
+  if (m.type === 'open') load().then(() => { go('home'); openItem(m.id); });
+  else load();
 });
-document.addEventListener('visibilitychange', () => { if (!document.hidden) { render(); refreshSetup(); } });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { load(); refreshSetup(); } });
 
 (async () => {
   reg = await navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' });
   await navigator.serviceWorker.ready;
   reg.update();
-  const items = await allItems();
+  await load();
   const s = await reg.pushManager.getSubscription();
   if (s && items.length) store.set('paired', s.endpoint);
-  loadSettings(); refreshSetup(); render();
+  loadSettings(); refreshSetup();
+  const m = /item=([^&]+)/.exec(location.hash);
+  if (m) { history.replaceState(null, '', location.pathname); openItem(decodeURIComponent(m[1])); }
   setInterval(render, 60000);
 })();
 </script>

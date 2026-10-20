@@ -1,10 +1,30 @@
-// Receives Claude's pushes, keeps them for the feed, and shows them on the lock screen.
+// Boss Wesley's assistant: receives Claude's pushes, keeps them for the app, shows them on the lock screen.
 const PROJECT_URL = 'https://claude.ai/code/project/chan_018RSN8eBbdhCb2VDwseegbT';
-const LABEL = { wait: 'Needs you', work: 'Started', done: 'Done', stuck: 'Stuck', info: 'Update' };
+const LOGO = 'https://d8j0ntlcm91z4.cloudfront.net/user_39lXpVmJGYmfIDH38JTzV7BC6Ww/hf_20261020_194658_a94d7728-2980-4476-b683-44e6aebf1b9b.png';
+const LABEL = { wait: 'Needs you', work: 'Started', done: 'Done', stuck: 'Stuck', info: 'Update', brief: 'Brief' };
 const DEFAULTS = { quietOn: true, quietFrom: '23:00', quietTo: '08:00', urgentRings: true };
+const SHELL = 'shell-v3';
+const SHELL_FILES = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'badge-96.png'];
 
-self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+self.addEventListener('install', (e) => {
+  e.waitUntil(caches.open(SHELL).then((c) => c.addAll(SHELL_FILES)).catch(() => {}).then(() => self.skipWaiting()));
+});
+self.addEventListener('activate', (e) => {
+  e.waitUntil((async () => {
+    for (const k of await caches.keys()) if (k !== SHELL) await caches.delete(k);
+    await self.clients.claim();
+  })());
+});
+// Network first so updates land straight away; the cached copy keeps the app opening offline.
+self.addEventListener('fetch', (e) => {
+  const url = new URL(e.request.url);
+  if (e.request.method !== 'GET' || url.origin !== self.location.origin) return;
+  e.respondWith(fetch(e.request).then((r) => {
+    const copy = r.clone();
+    caches.open(SHELL).then((c) => c.put(e.request, copy)).catch(() => {});
+    return r;
+  }).catch(() => caches.match(e.request).then((r) => r || caches.match('index.html'))));
+});
 
 function db() {
   return new Promise((res, rej) => {
@@ -41,8 +61,8 @@ async function updateBadge() {
   const n = [...latest.values()].filter((i) => (i.kind === 'wait' || i.kind === 'stuck') && !i.cleared).length;
   if (self.navigator.setAppBadge) n ? self.navigator.setAppBadge(n) : self.navigator.clearAppBadge();
 }
-async function tellClients() {
-  for (const c of await self.clients.matchAll({ includeUncontrolled: true })) c.postMessage('new');
+async function tell(msg) {
+  for (const c of await self.clients.matchAll({ includeUncontrolled: true })) c.postMessage(msg);
 }
 
 self.addEventListener('push', (e) => {
@@ -52,25 +72,27 @@ self.addEventListener('push', (e) => {
   it.kind = it.kind || 'info';
   it.ts = it.ts || Date.now();
   it.url = it.url || PROJECT_URL;
+  it.read = false;
   e.waitUntil((async () => {
     await putItem(it);
     await updateBadge();
     const p = await getSettings();
     const urgent = it.kind === 'wait' || it.kind === 'stuck';
-    const silent = inQuiet(p) && !(urgent && p.urgentRings);
+    const rings = urgent ? p.urgentRings : it.kind === 'brief';
+    const silent = inQuiet(p) && !rings;
     const actions = urgent
-      ? [{ action: 'open', title: 'Open in Claude' }, { action: 'handled', title: 'Handled' }]
-      : [{ action: 'open', title: 'Open in Claude' }, { action: 'feed', title: 'See all' }];
+      ? [{ action: 'handled', title: 'Handled' }, { action: 'thread', title: 'Open thread' }]
+      : [{ action: 'thread', title: 'Open thread' }, { action: 'dismiss', title: 'Dismiss' }];
     await self.registration.showNotification(it.title, {
-      body: (it.key ? LABEL[it.kind] + ' · ' + it.key + '\n' : '') + (it.body || ''),
-      // One notification per thread on the lock screen: the newest replaces the older one.
+      body: (it.key && it.kind !== 'brief' ? LABEL[it.kind] + ' · ' + it.key + '\n' : '') + (it.body || ''),
+      // One card per thread on the lock screen: the newest replaces the older one.
       tag: it.key || it.id, renotify: !silent, silent,
-      icon: 'icon-192.png', badge: 'badge-96.png', timestamp: it.ts,
+      icon: LOGO, badge: 'badge-96.png', timestamp: it.ts,
       requireInteraction: urgent, actions,
       vibrate: silent ? [] : urgent ? [300, 120, 300, 120, 300] : [250, 100, 250],
       data: { url: it.url, id: it.id },
     });
-    await tellClients();
+    await tell({ type: 'new', id: it.id });
   })());
 });
 
@@ -78,17 +100,21 @@ self.addEventListener('notificationclick', (e) => {
   e.notification.close();
   const data = e.notification.data || {};
   e.waitUntil((async () => {
-    if (e.action === 'handled') {
-      const it = (await allItems()).find((i) => i.id === data.id);
-      if (it) { it.cleared = true; await putItem(it); }
-      await updateBadge(); await tellClients();
+    const it = (await allItems()).find((i) => i.id === data.id);
+    if (e.action === 'handled' || e.action === 'dismiss') {
+      if (it) { if (e.action === 'handled') it.cleared = true; it.read = true; await putItem(it); }
+      await updateBadge(); await tell({ type: 'changed' });
       return;
     }
-    if (e.action === 'feed') {
-      const wins = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
-      if (wins.length) return wins[0].focus();
-      return self.clients.openWindow('./');
+    if (e.action === 'thread') {
+      if (it) { it.read = true; await putItem(it); }
+      return self.clients.openWindow(data.url || PROJECT_URL);
     }
-    return self.clients.openWindow(data.url || PROJECT_URL);
+    // Tapping the notification itself opens the app on that update.
+    const target = new URL('./#item=' + encodeURIComponent(data.id || ''), self.registration.scope).href;
+    const wins = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    const mine = wins.find((w) => w.url.startsWith(self.registration.scope));
+    if (mine) { await mine.focus(); mine.postMessage({ type: 'open', id: data.id }); return; }
+    return self.clients.openWindow(target);
   })());
 });
