@@ -51,9 +51,9 @@
 </header>
 
 <div class="setup hidden" id="install">
-  <p><b>Step 1.</b> Put this on your home screen so it works like an app.</p>
+  <p><b>Put this on your home screen</b> so it opens like an app. Notifications already work without it.</p>
   <button class="btn primary" id="installBtn">Install app</button>
-  <p class="sub hidden" id="installHint" style="margin:10px 0 0">In Chrome tap the ⋮ menu, then <b>Add to Home screen</b> (or <b>Install app</b>), then open it from the new icon.</p>
+  <p class="sub hidden" id="installHint" style="margin:10px 0 0">If you opened this from Claude, tap ⋮ (top right) then <b>Open in Chrome</b> first. In Chrome tap ⋮ then <b>Add to Home screen</b>, then <b>Install</b>, and open it from the new icon.</p>
 </div>
 
 <div class="setup hidden" id="enable">
@@ -159,7 +159,7 @@ async function refreshSetup() {
   const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
   const perm = 'Notification' in window ? Notification.permission : 'denied';
   const sub = reg && await reg.pushManager.getSubscription();
-  $('install').classList.toggle('hidden', !!standalone || !!sub);
+  $('install').classList.toggle('hidden', !!standalone);
   $('enable').classList.toggle('hidden', !!sub);
   $('blocked').classList.toggle('hidden', perm !== 'denied');
   const paired = localStorage.getItem('paired') === (sub && sub.endpoint);
