@@ -3,7 +3,7 @@ const PROJECT_URL = 'https://claude.ai/code/project/chan_018RSN8eBbdhCb2VDwseegb
 const LOGO = 'https://d8j0ntlcm91z4.cloudfront.net/user_39lXpVmJGYmfIDH38JTzV7BC6Ww/hf_20261020_194658_a94d7728-2980-4476-b683-44e6aebf1b9b.png';
 const LABEL = { wait: 'Needs you', work: 'Started', done: 'Done', stuck: 'Stuck', info: 'Update', brief: 'Brief' };
 const DEFAULTS = { quietOn: true, quietFrom: '23:00', quietTo: '08:00', urgentRings: true };
-const SHELL = 'shell-v3';
+const SHELL = 'shell-v3.1';
 const SHELL_FILES = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'badge-96.png'];
 
 self.addEventListener('install', (e) => {
