@@ -9,7 +9,55 @@
   "background_color": "#111513",
   "theme_color": "#111513",
   "icons": [
-    { "src": "https://d8j0ntlcm91z4.cloudfront.net/user_39lXpVmJGYmfIDH38JTzV7BC6Ww/hf_20261020_194658_a94d7728-2980-4476-b683-44e6aebf1b9b.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" },
-    { "src": "https://d8j0ntlcm91z4.cloudfront.net/user_39lXpVmJGYmfIDH38JTzV7BC6Ww/hf_20261020_194658_a94d7728-2980-4476-b683-44e6aebf1b9b.png", "sizes": "1024x1024", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "https://d8j0ntlcm91z4.cloudfront.net/user_39lXpVmJGYmfIDH38JTzV7BC6Ww/hf_20261020_194658_a94d7728-2980-4476-b683-44e6aebf1b9b.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://d8j0ntlcm91z4.cloudfront.net/user_39lXpVmJGYmfIDH38JTzV7BC6Ww/hf_20261020_194658_a94d7728-2980-4476-b683-44e6aebf1b9b.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Brief me",
+      "short_name": "Brief me",
+      "url": "./#do=brief",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Ask by voice",
+      "short_name": "Ask",
+      "url": "./#do=ask",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Add a to-do",
+      "short_name": "To-do",
+      "url": "./#do=todo",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
   ]
 }

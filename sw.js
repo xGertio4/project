@@ -3,7 +3,7 @@ const PROJECT_URL = 'https://claude.ai/code/project/chan_018RSN8eBbdhCb2VDwseegb
 const LOGO = 'https://d8j0ntlcm91z4.cloudfront.net/user_39lXpVmJGYmfIDH38JTzV7BC6Ww/hf_20261020_194658_a94d7728-2980-4476-b683-44e6aebf1b9b.png';
 const LABEL = { wait: 'Needs you', work: 'Started', done: 'Done', stuck: 'Stuck', info: 'Update', brief: 'Brief' };
 const DEFAULTS = { quietOn: true, quietFrom: '23:00', quietTo: '08:00', urgentRings: true };
-const SHELL = 'shell-v3.1';
+const SHELL = 'shell-v4';
 const SHELL_FILES = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'badge-96.png'];
 
 self.addEventListener('install', (e) => {
@@ -82,7 +82,9 @@ self.addEventListener('push', (e) => {
     const silent = inQuiet(p) && !rings;
     const actions = urgent
       ? [{ action: 'handled', title: 'Handled' }, { action: 'thread', title: 'Open thread' }]
-      : [{ action: 'thread', title: 'Open thread' }, { action: 'dismiss', title: 'Dismiss' }];
+      : it.kind === 'brief'
+        ? [{ action: 'play', title: 'Play' }, { action: 'dismiss', title: 'Dismiss' }]
+        : [{ action: 'thread', title: 'Open thread' }, { action: 'dismiss', title: 'Dismiss' }];
     await self.registration.showNotification(it.title, {
       body: (it.key && it.kind !== 'brief' ? LABEL[it.kind] + ' · ' + it.key + '\n' : '') + (it.body || ''),
       // One card per thread on the lock screen: the newest replaces the older one.
@@ -110,11 +112,12 @@ self.addEventListener('notificationclick', (e) => {
       if (it) { it.read = true; await putItem(it); }
       return self.clients.openWindow(data.url || PROJECT_URL);
     }
-    // Tapping the notification itself opens the app on that update.
-    const target = new URL('./#item=' + encodeURIComponent(data.id || ''), self.registration.scope).href;
+    // Tapping the notification itself opens the app on that update; Play (or tapping a brief) reads it out loud.
+    const play = e.action === 'play' ? 'force' : it && it.kind === 'brief' ? 'auto' : '';
+    const target = new URL('./#item=' + encodeURIComponent(data.id || '') + (play ? '&play=' + play : ''), self.registration.scope).href;
     const wins = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
     const mine = wins.find((w) => w.url.startsWith(self.registration.scope));
-    if (mine) { await mine.focus(); mine.postMessage({ type: 'open', id: data.id }); return; }
+    if (mine) { await mine.focus(); mine.postMessage({ type: 'open', id: data.id, play }); return; }
     return self.clients.openWindow(target);
   })());
 });

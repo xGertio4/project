@@ -19,9 +19,10 @@
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { background: var(--bg); }
   body { margin: 0; color: var(--text); font: 15px/1.5 var(--sans); min-height: 100vh;
-         padding: env(safe-area-inset-top) 16px calc(84px + env(safe-area-inset-bottom)); }
+         padding: env(safe-area-inset-top) 16px calc(96px + env(safe-area-inset-bottom)); }
   a { color: inherit; }
   button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 0; }
+  svg.i, .btn svg, .voicebar svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 
   header { display: flex; align-items: center; gap: 12px; padding: 18px 0 8px; }
   .logo { width: 46px; height: 46px; border-radius: 12px; border: 1px solid var(--line); object-fit: cover; background: #000; }
@@ -37,6 +38,8 @@
   .stat b { display: block; font-size: 24px; font-weight: 700; line-height: 1.1; }
   .stat span { color: var(--muted); font-size: 12px; }
   .stat.w b { color: var(--wait); } .stat.r b { color: var(--work); } .stat.d b { color: var(--done); }
+  .quick { display: flex; gap: 8px; margin-top: 10px; }
+  .quick .btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 11px; font-size: 14px; font-weight: 600; border-radius: 12px; }
 
   .tabs { display: flex; gap: 6px; overflow-x: auto; padding: 10px 0 2px; scrollbar-width: none; }
   .tabs::-webkit-scrollbar { display: none; }
@@ -58,23 +61,37 @@
   .item .b { color: #c3ccc6; margin-top: 3px; font-size: 14px; white-space: pre-wrap; word-break: break-word;
              display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   .item .m { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 12px; color: var(--muted); gap: 8px; }
+  .item .m .when { white-space: nowrap; }
+  .stale { color: var(--wait); }
   .acts { display: flex; gap: 6px; }
   .btn { display: inline-block; font-size: 13px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: #202824; color: var(--text); text-decoration: none; }
   .btn.g { border-color: #2f4a3a; color: var(--green); }
   .btn.x { color: var(--muted); }
+  .btn.ic { padding: 6px 8px; display: inline-flex; align-items: center; justify-content: center; }
+  .btn.ic svg { width: 17px; height: 17px; }
   .btn.big { display: block; width: 100%; text-align: center; padding: 13px; font-size: 15px; font-weight: 600; background: var(--green); color: #0f1a14; border: 0; border-radius: 12px; }
-  .btn.ghost { display: block; width: 100%; text-align: center; padding: 11px; font-size: 14px; }
+  .btn.ghost { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; text-align: center; padding: 11px; font-size: 14px; }
   .k-wait { --c: var(--wait); } .k-work { --c: var(--work); } .k-done { --c: var(--done); } .k-stuck { --c: var(--stuck); } .k-info { --c: var(--info); } .k-brief { --c: var(--brief); }
 
   .brief { background: #18231d; border: 1px solid #2c3f33; border-radius: 14px; padding: 14px; margin-top: 14px; }
+  .brief .bh { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
   .brief .tag { color: var(--green); font-size: 12px; font-weight: 600; }
   .brief .t { font-weight: 700; font-size: 16px; margin: 4px 0 6px; }
   .brief .b { white-space: pre-wrap; color: #d3dbd6; font-size: 14px; }
+  .brief .btn { display: inline-flex; align-items: center; gap: 6px; }
 
   .search { width: 100%; font: inherit; font-size: 15px; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; outline: none; }
   .search:focus { border-color: #3a5a47; }
+  textarea.search { resize: vertical; min-height: 104px; padding-right: 52px; }
   .row2 { display: flex; gap: 8px; margin-top: 10px; }
   .row2 .btn { flex: 1; text-align: center; padding: 9px; }
+
+  .todo { display: flex; align-items: center; gap: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 8px 8px 8px 12px; margin-bottom: 8px; }
+  .todo span { flex: 1; min-width: 0; word-break: break-word; }
+  .todo.done span { color: var(--dim); text-decoration: line-through; }
+  .addrow { display: flex; gap: 8px; margin-bottom: 8px; }
+  .addrow .search { flex: 1; min-width: 0; }
+  .addrow .btn { flex: none; display: inline-flex; align-items: center; justify-content: center; padding: 0 12px; border-radius: 10px; }
 
   .thread { display: flex; align-items: center; gap: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; margin-bottom: 8px; }
   .thread .info { flex: 1; min-width: 0; }
@@ -86,24 +103,39 @@
   .card p { margin: 0 0 12px; color: #d3dbd6; font-size: 14px; }
   .card .hint { color: var(--muted); font-size: 12px; margin: 10px 0 0; }
   .set { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 11px 0; border-top: 1px solid var(--line); }
-  .set:first-child { border-top: 0; padding-top: 0; }
+  .set:first-child, .card > p + .set { border-top: 0; padding-top: 0; }
   .set label { flex: 1; }
   .set .hint { display: block; margin: 2px 0 0; }
-  input[type=time] { font: inherit; background: #121714; color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; color-scheme: dark; }
-  input[type=checkbox] { width: 22px; height: 22px; accent-color: var(--green); }
+  input[type=time], select { font: inherit; font-size: 14px; background: #121714; color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; color-scheme: dark; max-width: 58%; }
+  input[type=checkbox] { width: 22px; height: 22px; accent-color: var(--green); flex: none; }
+  input[type=range] { accent-color: var(--green); width: 46%; }
   .code { font-family: var(--mono); font-size: 11px; background: #0d110f; border: 1px solid var(--line); border-radius: 8px; padding: 10px; word-break: break-all; max-height: 84px; overflow: auto; margin-bottom: 10px; color: var(--muted); }
+  .say-list { margin: 0; padding-left: 18px; color: #d3dbd6; font-size: 14px; }
+  .say-list li { margin: 3px 0; }
+  .say-list b { color: var(--text); }
 
-  nav.bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: grid; grid-template-columns: repeat(4, 1fr);
+  nav.bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: grid; grid-template-columns: repeat(5, 1fr); align-items: end;
             background: rgba(17,21,19,.96); backdrop-filter: blur(8px); border-top: 1px solid var(--line); padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); }
   nav.bar button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0; color: var(--muted); font-size: 11px; position: relative; }
   nav.bar button svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   nav.bar button.sel { color: var(--green); }
+  nav.bar .ask { padding-top: 0; color: var(--green); }
+  nav.bar .ask .ring { width: 52px; height: 52px; margin-top: -22px; border-radius: 50%; background: var(--green); color: #0f1a14; display: grid; place-items: center; border: 4px solid var(--bg); box-shadow: 0 4px 14px rgba(0,0,0,.35); }
+  nav.bar .ask .ring svg { width: 24px; height: 24px; stroke-width: 2; }
   nav.bar .pip { position: absolute; top: 2px; left: calc(50% + 6px); min-width: 16px; height: 16px; border-radius: 99px; background: var(--wait); color: #1a1200; font-size: 10px; font-weight: 800; line-height: 16px; text-align: center; padding: 0 4px; letter-spacing: 0; }
   .view { display: none; } .view.on { display: block; }
 
+  .voicebar { position: fixed; left: 12px; right: 12px; bottom: calc(78px + env(safe-area-inset-bottom)); z-index: 55; display: none; align-items: center; gap: 10px;
+              background: #1d2a23; border: 1px solid #2f4a3a; border-radius: 14px; padding: 10px 10px 10px 14px; box-shadow: 0 8px 30px rgba(0,0,0,.4); }
+  .voicebar.on { display: flex; }
+  .voicebar .vi { color: var(--green); display: flex; }
+  .voicebar .vt { flex: 1; min-width: 0; font-size: 14px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .voicebar.tap { background: #233a2c; }
+  .voicebar.tap .vt { font-weight: 600; }
+
   .sheet-bg { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 60; display: none; }
   .sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 61; background: #1a201d; border-top: 1px solid var(--line); border-radius: 18px 18px 0 0;
-           padding: 18px 16px calc(18px + env(safe-area-inset-bottom)); max-height: 82vh; overflow: auto; transform: translateY(105%); transition: transform .22s ease; box-shadow: 0 -10px 40px rgba(0,0,0,.4); }
+           padding: 18px 16px calc(18px + env(safe-area-inset-bottom)); max-height: 86vh; overflow: auto; transform: translateY(105%); transition: transform .22s ease; box-shadow: 0 -10px 40px rgba(0,0,0,.4); }
   .sheet.on { transform: none; } .sheet-bg.on { display: block; }
   .sheet .grab { width: 40px; height: 4px; border-radius: 4px; background: var(--dim); margin: -6px auto 12px; }
   .sheet .tag { font-size: 12px; font-weight: 600; color: var(--c); }
@@ -111,10 +143,15 @@
   .sheet .b { white-space: pre-wrap; word-break: break-word; color: #d3dbd6; }
   .sheet .meta { color: var(--muted); font-size: 11px; margin: 10px 0 14px; }
   .sheet .stack { display: grid; gap: 8px; }
+  .sheet .mine { background: #18231d; border: 1px solid #2c3f33; border-radius: 10px; padding: 9px 11px; font-size: 13px; color: #d3dbd6; margin: 0 0 12px; white-space: pre-wrap; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 10px; }
+  .replybox { position: relative; margin-bottom: 10px; }
+  .replybox .btn { position: absolute; right: 8px; bottom: 10px; border-radius: 50%; width: 38px; height: 38px; padding: 0; }
 
-  .toast { position: fixed; left: 50%; bottom: calc(86px + env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(20px); opacity: 0; z-index: 70;
+  .toast { position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(20px); opacity: 0; z-index: 70;
            background: #223029; border: 1px solid #2f4a3a; color: var(--text); padding: 9px 14px; border-radius: 10px; font-size: 13px; transition: all .2s; pointer-events: none; white-space: nowrap; }
   .toast.on { opacity: 1; transform: translateX(-50%); }
+  body.vb .toast { bottom: calc(150px + env(safe-area-inset-bottom)); }
   .hidden { display: none !important; }
 </style>
 </head>
@@ -135,9 +172,21 @@
     <button class="stat r" data-go="feed" data-filter="work"><b id="sWork">0</b><span>Running</span></button>
     <button class="stat d" data-go="feed" data-filter="done"><b id="sDone">0</b><span>Done today</span></button>
   </div>
+  <div class="quick">
+    <button class="btn g" data-brief="now"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>Brief me</button>
+    <button class="btn" data-mic="cmd"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Ask by voice</button>
+  </div>
   <div id="setup"></div>
   <div id="briefBox"></div>
   <section><h2>Waiting on you <span class="n" id="nWait"></span></h2><div id="wait"></div></section>
+  <section><h2>Your to-dos <span class="n" id="nTodo"></span></h2>
+    <form class="addrow" id="todoForm" autocomplete="off">
+      <input class="search" id="todoIn" placeholder="Add a to-do" enterkeyhint="done">
+      <button type="button" class="btn ic" data-mic="todo" aria-label="Say a to-do"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+      <button class="btn g">Add</button>
+    </form>
+    <div id="todos"></div>
+  </section>
   <section><h2>Working now <span class="n" id="nWork"></span></h2><div id="work"></div></section>
   <section><h2>Done today <span class="n" id="nDone"></span></h2><div id="done"></div></section>
 </div>
@@ -160,6 +209,29 @@
 <!-- SETTINGS -->
 <div class="view" id="v-settings">
   <div class="card">
+    <p><b>Voice</b></p>
+    <div class="set"><label for="autoBrief">Read briefs out loud<span class="hint">When you tap a brief's notification. Android sometimes wants one more tap first.</span></label><input type="checkbox" id="autoBrief"></div>
+    <div class="set"><label for="voiceSel">Voice</label><select id="voiceSel"><option value="">Automatic</option></select></div>
+    <div class="set"><label for="rate">Speed <span id="rateVal" style="color:var(--muted)"></span></label><input type="range" id="rate" min="0.7" max="1.5" step="0.1"></div>
+    <div class="set"><label for="listenLang">I talk to it in<span class="hint">For the mic.</span></label><select id="listenLang"><option value="en-US">English</option><option value="sq-AL">Shqip</option></select></div>
+    <button class="btn ghost g" id="testVoice" style="margin-top:6px"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>Test the voice</button>
+    <p class="hint">Want a nicer voice? On your Samsung, open Settings, search "Text-to-speech", set the preferred engine to Google, then tap its gear → Install voice data → English. Pick the new voice here after.</p>
+  </div>
+  <div class="card">
+    <p><b>What you can say</b></p>
+    <p style="margin:0 0 8px">Tap the green mic, then say:</p>
+    <ul class="say-list">
+      <li><b>"Morning"</b> or <b>"Brief me"</b>: your brief</li>
+      <li><b>"What's waiting"</b>: everything that needs you</li>
+      <li><b>"What's running"</b> or <b>"What's done"</b></li>
+      <li><b>"Balkan Power"</b>, <b>"Marsilda"</b>, <b>"Besa"</b> or a thread name: where it stands</li>
+      <li><b>"Open"</b> + a thread name: shows it, one tap to go there</li>
+      <li><b>"Remind me to …"</b>: adds a to-do</li>
+      <li><b>"My to-dos"</b>, <b>"What's new"</b>, <b>"Goodnight"</b></li>
+      <li><b>"Stop"</b>: stops talking</li>
+    </ul>
+  </div>
+  <div class="card">
     <div class="set"><label for="quietOn">Quiet hours<span class="hint">Updates still arrive, just without sound or vibration.</span></label><input type="checkbox" id="quietOn"></div>
     <div class="set"><label>From</label><input type="time" id="quietFrom"></div>
     <div class="set"><label>To</label><input type="time" id="quietTo"></div>
@@ -167,7 +239,7 @@
   </div>
   <div class="card">
     <p><b>Briefs</b></p>
-    <p style="margin:0">07:00 · Good morning, Boss Wesley: what needs you, what's running, what finished overnight.<br>23:00 · Goodnight, Boss Wesley: today's wins and what's still open.<br>Briefs always ring.</p>
+    <p style="margin:0">07:00 · Good morning, Boss Wesley: what needs you, what's running, what finished overnight.<br>23:00 · Goodnight, Boss Wesley: today's wins and what's still open.<br>Briefs always ring. Tap Play on one to hear it.</p>
   </div>
   <div class="card">
     <p><b>No sound on your Samsung?</b></p>
@@ -182,16 +254,18 @@
     <button class="btn ghost g hidden" id="installBtn" style="margin-top:8px">Install on home screen</button>
     <p class="hint hidden" id="installHint">If this opened inside Claude, tap ⋮ then Open in Chrome first. In Chrome: ⋮ → Add to Home screen → Install.</p>
   </div>
-  <p class="hint" style="text-align:center;color:var(--dim);font-size:11px;margin:16px 0">assistant v3.1 · built by Claude for Boss Wesley</p>
+  <p class="hint" style="text-align:center;color:var(--dim);font-size:11px;margin:16px 0">assistant v4 · built by Claude for Boss Wesley</p>
 </div>
 
 <nav class="bar">
   <button data-go="home" class="sel"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>Home<span class="pip hidden" id="pip"></span></button>
   <button data-go="feed"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Feed</button>
+  <button class="ask" data-mic="cmd" aria-label="Ask by voice"><span class="ring"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>Ask</button>
   <button data-go="threads"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Threads</button>
   <button data-go="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Settings</button>
 </nav>
 
+<div class="voicebar" id="vbar"><span class="vi" id="vicon"></span><span class="vt" id="vtext"></span><button class="btn x" id="vx">Stop</button></div>
 <div class="sheet-bg" id="sheetBg"></div>
 <div class="sheet" id="sheet"></div>
 <div class="toast" id="toast"></div>
@@ -201,8 +275,18 @@ const VAPID_PUBLIC = 'BM25jzjsJccjy-p0j1Y2CgK4pGlkiOvg3jjIswlbcjnwOh1Lc79ixRIGS1
 const PROJECT_URL = 'https://claude.ai/code/project/chan_018RSN8eBbdhCb2VDwseegbT';
 const LABEL = { wait: 'Needs you', work: 'Started', done: 'Done', stuck: 'Stuck', info: 'Update', brief: 'Brief' };
 const BRANDS = [['all', 'All'], ['besa', 'Besa'], ['marsilda', 'Marsilda'], ['bp', 'Balkan Power'], ['other', 'Other']];
+const BRAND_NAME = { besa: 'Besa', marsilda: 'Marsilda', bp: 'Balkan Power', other: 'Other' };
 const KINDS = [['all', 'All'], ['wait', 'Needs you'], ['work', 'Running'], ['done', 'Done'], ['brief', 'Briefs'], ['info', 'Other']];
-const DEFAULTS = { quietOn: true, quietFrom: '23:00', quietTo: '08:00', urgentRings: true };
+const DEFAULTS = { quietOn: true, quietFrom: '23:00', quietTo: '08:00', urgentRings: true, autoBrief: true, voiceURI: '', rate: 1, listenLang: 'en-US' };
+const QUICK = ['Yes, go ahead', 'Looks good, ship it', 'No, stop', 'Change this: ', 'Later, not now', 'Send me the link'];
+const STALE = 2 * 3600e3;
+const ICON = {
+  speaker: '<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>',
+  mic: '<svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+  play: '<svg viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></svg>',
+  trash: '<svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
+  x: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+};
 const $ = (id) => document.getElementById(id);
 const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
 $('projBtn').href = PROJECT_URL;
@@ -238,6 +322,8 @@ const putItem = (it) => req('items', 'readwrite', (s) => s.put(it));
 const delItems = (ids) => req('items', 'readwrite', (s) => { ids.forEach((id) => s.delete(id)); });
 const getSettings = () => req('settings', 'readonly', (s) => s.get('prefs')).then((p) => ({ ...DEFAULTS, ...(p || {}) }));
 const putSettings = (p) => req('settings', 'readwrite', (s) => s.put(p, 'prefs'));
+const getTodos = () => req('settings', 'readonly', (s) => s.get('todos')).then((t) => t || []);
+const putTodos = (t) => req('settings', 'readwrite', (s) => s.put(t, 'todos'));
 
 // ---- Helpers ----
 function ago(ts) {
@@ -247,57 +333,88 @@ function ago(ts) {
   if (s < 86400) return Math.floor(s / 3600) + 'h ago';
   return new Date(ts).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 }
+function short(ms) {
+  const m = Math.max(1, Math.floor(ms / 60000));
+  return m < 60 ? m + 'm' : m < 1440 ? Math.floor(m / 60) + 'h' : Math.floor(m / 1440) + 'd';
+}
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+function spokenDur(ms) {
+  const m = Math.max(1, Math.round(ms / 60000));
+  if (m < 60) return plural(m, 'minute', 'minutes');
+  const h = Math.round(m / 60);
+  return h < 24 ? plural(h, 'hour', 'hours') : plural(Math.round(h / 24), 'day', 'days');
+}
 const clock = (ts) => new Date(ts).toLocaleString(undefined, { weekday: 'short', hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' });
 function esc(s) { return String(s || '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
-function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 1800); }
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 2200); }
 function greeting() {
   const h = new Date().getHours();
   return h < 5 ? 'Late shift, Boss Wesley' : h < 12 ? 'Good morning, Boss Wesley' : h < 18 ? 'Good afternoon, Boss Wesley' : h < 23 ? 'Good evening, Boss Wesley' : 'Late shift, Boss Wesley';
 }
+const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); };
 const headsOf = (list) => { const m = new Map(); for (const it of list) { const k = it.key || it.id; if (!m.has(k)) m.set(k, it); } return [...m.values()]; };
 const isWaiting = (i) => (i.kind === 'wait' || i.kind === 'stuck') && !i.cleared;
 const hasThread = (it) => /[?&]thread=/.test(it.url || '');
+const listNames = (arr, f, max = 4) => { const n = arr.slice(0, max).map(f); const rest = arr.length - n.length; return n.join('; ') + (rest > 0 ? `; and ${rest} more` : ''); };
+
+function snapshot() {
+  const heads = headsOf(items.filter((i) => i.kind !== 'brief'));
+  return {
+    wait: heads.filter(isWaiting).sort((a, b) => a.ts - b.ts), // longest waiting first
+    work: heads.filter((i) => i.kind === 'work'),
+    done: items.filter((i) => i.kind === 'done' && i.ts >= startOfToday()),
+  };
+}
 
 function card(it, opts = {}) {
+  const w = isWaiting(it); const since = Date.now() - it.ts;
+  const when = opts.home && w ? `waiting ${short(since)}`
+    : opts.home && it.kind === 'work' && since > STALE ? `<span class="stale">quiet for ${short(since)}</span>` : ago(it.ts);
   return `<div class="item k-${esc(it.kind)}${it.read ? '' : ' unread'}" data-open="${esc(it.id)}">
     <div class="tag">${LABEL[it.kind] || 'Update'}${it.key ? ' · ' + esc(it.key) : ''}</div>
     <div class="t">${esc(it.title)}</div>${it.body ? `<div class="b">${esc(it.body)}</div>` : ''}
-    <div class="m"><span>${ago(it.ts)}</span><span class="acts">
-      ${opts.handled && isWaiting(it) ? `<button class="btn g" data-handled="${esc(it.id)}">Handled</button>` : ''}
-      <button class="btn x" data-del="${esc(it.id)}">Delete</button></span></div></div>`;
+    <div class="m"><span class="when">${when}</span><span class="acts">
+      ${w ? `<button class="btn g" data-reply="${esc(it.id)}">Reply</button>` : ''}
+      ${opts.handled && w ? `<button class="btn" data-handled="${esc(it.id)}">Handled</button>` : ''}
+      <button class="btn x ic" data-say="${esc(it.id)}" aria-label="Read it out loud">${ICON.speaker}</button>
+      <button class="btn x ic" data-del="${esc(it.id)}" aria-label="Delete">${ICON.trash}</button></span></div></div>`;
 }
 
 // ---- State ----
 let items = [];
+let todos = [];
+let prefs = { ...DEFAULTS };
 let view = 'home';
 let kindFilter = 'all';
 let brandFilter = store.get('brand') || 'all';
 let query = '';
 
-async function load() { items = await allItems(); render(); }
+async function load() { [items, todos] = await Promise.all([allItems(), getTodos()]); render(); }
 
 function render() {
   $('greet').textContent = greeting();
   $('updated').textContent = items.length ? 'last update ' + ago(items[0].ts) : 'no updates yet';
-  const heads = headsOf(items.filter((i) => i.kind !== 'brief'));
-  const today = new Date(); today.setHours(0, 0, 0, 0);
-  const wait = heads.filter(isWaiting);
-  const work = heads.filter((i) => i.kind === 'work');
-  const done = items.filter((i) => i.kind === 'done' && i.ts >= today.getTime());
+  const { wait, work, done } = snapshot();
   $('sWait').textContent = wait.length; $('sWork').textContent = work.length; $('sDone').textContent = done.length;
   $('pip').textContent = wait.length; $('pip').classList.toggle('hidden', !wait.length);
   if (navigator.setAppBadge) wait.length ? navigator.setAppBadge(wait.length) : navigator.clearAppBadge();
 
   // Home
   const brief = items.find((i) => i.kind === 'brief');
-  $('briefBox').innerHTML = brief ? `<div class="brief" data-open="${esc(brief.id)}"><div class="tag">${esc(brief.key || 'Brief')} · ${ago(brief.ts)}</div><div class="t">${esc(brief.title)}</div><div class="b">${esc(brief.body)}</div></div>` : '';
+  $('briefBox').innerHTML = brief ? `<div class="brief" data-open="${esc(brief.id)}"><div class="bh"><div class="tag">${esc(brief.key || 'Brief')} · ${ago(brief.ts)}</div>
+    <button class="btn g" data-say="${esc(brief.id)}">${ICON.play}Play</button></div><div class="t">${esc(brief.title)}</div><div class="b">${esc(brief.body)}</div></div>` : '';
   const fill = (el, n, list, emptyText, opts) => {
     $(n).textContent = list.length || '';
     $(el).innerHTML = list.length ? list.slice(0, 12).map((i) => card(i, opts)).join('') : `<div class="empty">${emptyText}</div>`;
   };
-  fill('wait', 'nWait', wait, 'Nothing needs you right now.', { handled: true });
-  fill('work', 'nWork', work, 'Nothing running.');
+  fill('wait', 'nWait', wait, 'Nothing needs you right now.', { handled: true, home: true });
+  fill('work', 'nWork', work, 'Nothing running.', { home: true });
   fill('done', 'nDone', done, 'Nothing finished yet today.');
+  const open = todos.filter((t) => !t.done);
+  $('nTodo').textContent = open.length || '';
+  $('todos').innerHTML = todos.map((t) => `<div class="todo${t.done ? ' done' : ''}"><input type="checkbox" data-todo="${esc(t.id)}"${t.done ? ' checked' : ''} aria-label="Done">
+    <span>${esc(t.text)}</span><button class="btn x ic" data-todel="${esc(t.id)}" aria-label="Remove">${ICON.x}</button></div>`).join('')
+    || '<div class="empty">Type one, or tap the mic and say "remind me to…".</div>';
 
   // Feed
   $('kinds').innerHTML = KINDS.map(([id, name]) => `<button class="tab${kindFilter === id ? ' sel' : ''}" data-kind="${id}">${name}</button>`).join('');
@@ -321,28 +438,239 @@ function render() {
     const count = items.filter((i) => i.key === t.key).length;
     return `<div class="thread k-${esc(t.kind)}"><div class="info" data-thread="${esc(t.key)}"><div class="name">${esc(t.key)}</div>
       <div class="st"><b>${LABEL[t.kind] || 'Update'}</b> · ${ago(t.ts)} · ${count} update${count === 1 ? '' : 's'}</div></div>
+      <button class="btn x ic" data-say="${esc(t.id)}" aria-label="Read it out loud">${ICON.speaker}</button>
       <a class="btn g" href="${esc(withLink ? withLink.url : PROJECT_URL)}" target="_blank" rel="noopener">Open</a></div>`;
   }).join('') || '<div class="empty">Threads show up here as updates arrive.</div>';
 }
 
-// ---- Detail sheet ----
+// ---- Voice: the phone's own text-to-speech reads things out ----
+const synth = window.speechSynthesis;
+let utter = []; // kept so Chrome doesn't drop the callbacks mid-sentence
+let sayRun = null;
+let pendingTap = null;
+let barMode = '';
+let rec = null;
+
+function bar(mode, text) {
+  barMode = mode; document.body.classList.add('vb');
+  $('vbar').className = 'voicebar on ' + mode;
+  $('vicon').innerHTML = mode === 'listen' ? ICON.mic : mode === 'tap' ? ICON.play : ICON.speaker;
+  $('vtext').textContent = text;
+  $('vx').textContent = mode === 'speak' ? 'Stop' : mode === 'listen' ? 'Cancel' : 'Not now';
+}
+function hideBar() { barMode = ''; $('vbar').className = 'voicebar'; document.body.classList.remove('vb'); }
+// Android only lets a page talk or listen right after a tap. If it refuses, the next tap anywhere does it.
+function needTap(fn, text) { pendingTap = fn; bar('tap', text); }
+function stopVoice() {
+  sayRun = null; pendingTap = null;
+  if (synth) synth.cancel();
+  if (rec) { const r = rec; rec = null; try { r.abort(); } catch {} }
+  hideBar();
+}
+
+function voices() { return synth ? synth.getVoices() : []; }
+function pickVoice() {
+  const vs = voices();
+  return vs.find((v) => v.voiceURI === prefs.voiceURI) || vs.find((v) => /^en[-_]GB/i.test(v.lang)) || vs.find((v) => /^en/i.test(v.lang)) || null;
+}
+function forSpeech(s) {
+  return String(s || '')
+    .replace(/https?:\/\/\S+/g, '').replace(/[·•|]/g, ', ').replace(/→|->/g, ' then ').replace(/&/g, ' and ')
+    .replace(/\b(\d+)\s?h\b/g, (_, n) => n + (n === '1' ? ' hour' : ' hours'))
+    .replace(/\b(\d+)m ago\b/g, '$1 minutes ago').replace(/\bBP\b/g, 'Balkan Power')
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu, '')
+    .replace(/\s*\n+\s*/g, '. ').replace(/([.!?:;])(\s*\.)+/g, '$1').replace(/\s{2,}/g, ' ').trim();
+}
+function chunks(text) {
+  const out = [];
+  for (const s of text.split(/(?<=[.!?])\s+/)) {
+    if (s.length <= 220) { if (s.trim()) out.push(s); continue; }
+    let cur = '';
+    for (const part of s.split(/(?<=[,;])\s+/)) {
+      if (cur && (cur + ' ' + part).length > 220) { out.push(cur); cur = part; } else cur = cur ? cur + ' ' + part : part;
+    }
+    if (cur) out.push(cur);
+  }
+  return out;
+}
+function say(text, label = 'Speaking') {
+  if (!synth) { toast('This phone has no voice for web apps'); return; }
+  const parts = chunks(forSpeech(text));
+  if (!parts.length) return;
+  if (rec) { const r = rec; rec = null; try { r.abort(); } catch {} }
+  synth.cancel(); pendingTap = null;
+  const run = {}; sayRun = run; let started = false;
+  const v = pickVoice();
+  const again = () => needTap(() => say(text, label), 'Tap anywhere to hear it');
+  utter = parts.map((p, i) => {
+    const u = new SpeechSynthesisUtterance(p);
+    if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'en-GB';
+    u.rate = Number(prefs.rate) || 1;
+    u.onstart = () => { if (sayRun !== run) return; started = true; pendingTap = null; bar('speak', label); };
+    u.onerror = (e) => {
+      if (sayRun !== run) return;
+      if (e.error === 'not-allowed') again();
+      else if (e.error !== 'interrupted' && e.error !== 'canceled' && barMode === 'speak') hideBar();
+    };
+    u.onend = () => { if (sayRun === run && i === parts.length - 1 && barMode === 'speak') { sayRun = null; hideBar(); } };
+    return u;
+  });
+  bar('speak', label);
+  utter.forEach((u) => synth.speak(u));
+  setTimeout(() => { if (sayRun === run && !started && !synth.speaking && barMode === 'speak') again(); }, 2500);
+}
+
+// ---- What it says ----
+function hello() {
+  const h = new Date().getHours();
+  return h >= 5 && h < 12 ? 'Good morning, Boss Wesley.' : h >= 12 && h < 18 ? 'Good afternoon, Boss Wesley.' : h >= 18 && h < 23 ? 'Good evening, Boss Wesley.' : 'Still up, Boss Wesley.';
+}
+function todoLine() {
+  const open = todos.filter((t) => !t.done);
+  return open.length ? `\nOn your to-do list: ${listNames(open, (t) => t.text, 3)}.` : '';
+}
+function statusText() {
+  const { wait, work, done } = snapshot();
+  const lines = [wait.length ? `${plural(wait.length, 'thing needs', 'things need')} you. ${listNames(wait, (i) => `${i.key || 'Update'}: ${i.title}`)}.` : 'Nothing needs you right now.'];
+  if (work.length) lines.push(`${plural(work.length, 'job is', 'jobs are')} running: ${listNames(work, (i) => i.key || i.title)}.`);
+  lines.push(done.length ? `${plural(done.length, 'thing', 'things')} finished today: ${listNames(done, (i) => i.title, 3)}.` : 'Nothing has finished yet today.');
+  return lines.join('\n') + todoLine();
+}
+function readList(kind) {
+  const s = snapshot(); const now = Date.now();
+  if (kind === 'wait') return s.wait.length ? `${plural(s.wait.length, 'thing needs', 'things need')} you.\n` + s.wait.slice(0, 6).map((i) => `${i.key || 'Update'}: ${i.title}, waiting ${spokenDur(now - i.ts)}.`).join('\n') : 'Nothing needs you right now.';
+  if (kind === 'work') return s.work.length ? `${plural(s.work.length, 'job is', 'jobs are')} running.\n` + s.work.slice(0, 6).map((i) => `${i.key || 'Update'}: ${i.title}, last update ${spokenDur(now - i.ts)} ago.`).join('\n') : 'Nothing is running right now.';
+  return s.done.length ? `${plural(s.done.length, 'thing', 'things')} finished today.\n` + s.done.slice(0, 6).map((i) => `${i.title}.`).join('\n') : 'Nothing has finished yet today.';
+}
+function markRead(it) { if (it && !it.read) { it.read = true; putItem(it).then(load); } }
+function sayItem(it) {
+  if (!it) return;
+  markRead(it);
+  if (it.kind === 'brief') return say(`${it.title}.\n${it.body}${todoLine()}`, 'Reading your brief');
+  say(`${LABEL[it.kind] || 'Update'}${it.key ? ', ' + it.key : ''}.\n${it.title}.\n${it.body || ''}${it.reply ? `\nYou replied: ${it.reply}` : ''}`, 'Reading: ' + (it.key || it.title));
+}
+// Claude's own brief if it came in the last 3 hours, otherwise a live one from what's in the app.
+function briefMe(which) {
+  const recent = items.find((i) => i.kind === 'brief' && Date.now() - i.ts < 3 * 3600e3 && (which === 'night') === /night/i.test(i.key || i.title));
+  if (recent) {
+    markRead(recent);
+    const { wait, work } = snapshot();
+    return say(`${recent.title}.\n${recent.body}\nRight now: ${wait.length ? plural(wait.length, 'thing needs', 'things need') + ' you' : 'nothing needs you'}, and ${plural(work.length, 'job is', 'jobs are')} running.${todoLine()}`, 'Reading your brief');
+  }
+  say(`${which === 'night' ? "Here's your night recap, Boss Wesley." : hello()}\n${statusText()}`, which === 'night' ? 'Night recap' : 'Your brief');
+}
+function threadStatus(t) {
+  return `${t.key}. ${LABEL[t.kind] || 'Update'}, ${spokenDur(Date.now() - t.ts)} ago.\n${t.title}.\n${t.body || ''}`;
+}
+function brandStatus(b) {
+  const { wait, work } = snapshot();
+  const w = wait.filter((i) => brand(i) === b); const r = work.filter((i) => brand(i) === b);
+  let s = `${BRAND_NAME[b]}: ${w.length ? plural(w.length, 'thing needs', 'things need') + ' you' : 'nothing needs you'}, ${plural(r.length, 'job', 'jobs')} running.`;
+  if (w.length) s += `\nWaiting: ${listNames(w, (i) => `${i.key}: ${i.title}`)}.`;
+  if (r.length) s += `\nRunning: ${listNames(r, (i) => i.key || i.title)}.`;
+  return s;
+}
+function todoText() {
+  const open = todos.filter((t) => !t.done);
+  return open.length ? `You have ${plural(open.length, 'to-do', 'to-dos')}.\n` + open.slice(0, 8).map((t) => t.text + '.').join('\n') : 'Your to-do list is clear.';
+}
+
+// ---- Voice commands ----
+const STOPWORDS = new Set('the and for with what whats about how is are open show me thread status of on in to my go tell read update updates where we at its it please can you'.split(' '));
+const words = (s) => s.toLowerCase().replace(/[^a-z0-9ëç\s]/g, ' ').split(/\s+/).filter((w) => w.length > 2 && !STOPWORDS.has(w));
+function findThread(text) {
+  const said = words(text); let best = null; let score = 0;
+  for (const t of headsOf(items.filter((i) => i.key && i.kind !== 'brief'))) {
+    const kw = words(t.key); if (!kw.length) continue;
+    const hit = kw.filter((w) => said.some((s) => s === w || (s.length > 3 && w.length > 3 && (w.startsWith(s) || s.startsWith(w))))).length;
+    const sc = hit / kw.length + hit * 0.1;
+    if (hit && sc > score) { score = sc; best = t; }
+  }
+  return score >= 0.45 ? best : null;
+}
+function command(raw) {
+  const t = raw.toLowerCase().trim();
+  const note = /^(?:please\s+)?(?:add (?:a )?(?:to-?do|note|task)(?: to)?|note|to-?do|remind me(?: to)?|shëno)[:,]?\s+(.+)$/i.exec(raw.trim());
+  if (/^(stop|quiet|enough|cancel|ndal|mjaft)\b/.test(t)) return stopVoice();
+  if (note) { addTodo(note[1]); return say(`Added to your to-dos: ${note[1]}.`, 'To-do added'); }
+  const th = findThread(raw);
+  if (th && /\b(open|show|go to|hap)\b/.test(t)) { go('home'); openItem(th.id); return say(`Here's ${th.key}. Tap Open this thread to go there.`, th.key); }
+  if (/good ?night|night|recap|natën/.test(t)) return briefMe('night');
+  if (/wait|need|pending|my turn|stuck|block|pret/.test(t)) return say(readList('wait'), 'What needs you');
+  if (th) return say(threadStatus(th), th.key);
+  const b = /balkan/.test(t) ? 'bp' : /marsilda|kryme/.test(t) ? 'marsilda' : /\bbesa\b/.test(t) ? 'besa' : '';
+  if (b) return say(brandStatus(b), BRAND_NAME[b]);
+  if (/\brun|working|progress|going on|punon/.test(t)) return say(readList('work'), 'Running now');
+  if (/done|finish|complete|mbaru/.test(t)) return say(readList('done'), 'Done today');
+  if (/to-?dos?|my list|tasks|notes|detyr/.test(t)) return say(todoText(), 'Your to-dos');
+  if (/latest|last|newest|\bnew\b|recent|fundit/.test(t)) return items[0] ? sayItem(items[0]) : say('No updates yet.');
+  if (/morning|brief|update|status|what'?s up|where|how are|mirëmëngjes|si jemi|ku jemi/.test(t)) return briefMe();
+  say("Sorry Boss, I didn't catch that. Try morning, what's waiting, or a thread name.", `Heard: "${raw}"`);
+}
+function listen(onFinal, label = 'Listening…') {
+  const R = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!R) { toast('The mic is not available here'); return; }
+  stopVoice();
+  const r = new R(); rec = r;
+  r.lang = prefs.listenLang || 'en-US'; r.interimResults = true; r.continuous = false; r.maxAlternatives = 1;
+  let heard = '';
+  r.onresult = (e) => { heard = [...e.results].map((x) => x[0].transcript).join(' ').trim(); if (rec === r) bar('listen', `"${heard}"`); };
+  r.onerror = (e) => {
+    if (rec !== r) return; rec = null; hideBar();
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') toast('Allow the microphone for this app');
+    else if (e.error === 'no-speech') toast("I didn't hear anything");
+  };
+  r.onend = () => { if (rec !== r) return; rec = null; hideBar(); if (heard) onFinal(heard); };
+  try { r.start(); bar('listen', label); } catch { rec = null; needTap(() => listen(onFinal, label), 'Tap anywhere to talk'); }
+}
+function mic(kind) {
+  if (kind === 'todo') return listen((text) => { addTodo(text); toast('Added'); }, 'Say your to-do…');
+  if (kind === 'reply') return listen((text) => { const tx = $('replyTx'); if (!tx) return; tx.value = (tx.value.trim() ? tx.value.trim() + ' ' : '') + text; tx.dispatchEvent(new Event('input')); }, 'Say your reply…');
+  listen(command);
+}
+
+// ---- To-dos (stay on the phone) ----
+async function addTodo(text) {
+  text = String(text || '').trim().replace(/^./, (c) => c.toUpperCase());
+  if (!text) return;
+  todos.unshift({ id: String(Date.now()), text, done: false, ts: Date.now() });
+  await putTodos(todos); render();
+}
+$('todoForm').addEventListener('submit', (e) => { e.preventDefault(); addTodo($('todoIn').value); $('todoIn').value = ''; });
+
+// ---- Detail and reply sheets ----
+function showSheet(kind, html) {
+  const s = $('sheet'); s.className = `sheet k-${kind}`; s.innerHTML = '<div class="grab"></div>' + html;
+  requestAnimationFrame(() => { s.classList.add('on'); $('sheetBg').classList.add('on'); });
+}
 async function openItem(id) {
   const it = items.find((i) => i.id === id);
   if (!it) return;
   if (!it.read) { it.read = true; await putItem(it); }
-  const s = $('sheet');
-  s.className = `sheet k-${it.kind}`;
-  s.innerHTML = `<div class="grab"></div><div class="tag">${LABEL[it.kind] || 'Update'}${it.key ? ' · ' + esc(it.key) : ''}</div>
+  showSheet(it.kind, `<div class="tag">${LABEL[it.kind] || 'Update'}${it.key ? ' · ' + esc(it.key) : ''}</div>
     <h3>${esc(it.title)}</h3>${it.body ? `<div class="b">${esc(it.body)}</div>` : ''}
-    <div class="meta">${clock(it.ts)} · ${({ besa: 'Besa', marsilda: 'Marsilda', bp: 'Balkan Power', other: 'Other' })[brand(it)]}</div>
+    <div class="meta">${clock(it.ts)} · ${BRAND_NAME[brand(it)]}</div>
+    ${it.reply ? `<div class="mine">You replied ${ago(it.repliedAt)}: ${esc(it.reply)}</div>` : ''}
     <div class="stack">
       <a class="btn big" href="${esc(it.url || PROJECT_URL)}" target="_blank" rel="noopener">${hasThread(it) ? 'Open this thread in Claude' : 'Open Uesli A.I Work in Claude'}</a>
-      ${isWaiting(it) ? `<button class="btn ghost g" data-handled="${esc(it.id)}">Mark handled</button>` : ''}
+      ${it.kind !== 'brief' ? `<button class="btn ghost g" data-reply="${esc(it.id)}">Reply</button>` : ''}
+      <button class="btn ghost g" data-say="${esc(it.id)}">${ICON.speaker}Read it to me</button>
+      ${isWaiting(it) ? `<button class="btn ghost" data-handled="${esc(it.id)}">Mark handled</button>` : ''}
       ${it.key ? `<button class="btn ghost" data-thread="${esc(it.key)}">All updates from this thread</button>` : ''}
       <button class="btn ghost x" data-del="${esc(it.id)}">Delete</button>
-    </div>`;
-  requestAnimationFrame(() => { s.classList.add('on'); $('sheetBg').classList.add('on'); });
+    </div>`);
   render();
+}
+function openReply(id) {
+  const it = items.find((i) => i.id === id);
+  if (!it) return;
+  showSheet(it.kind, `<div class="tag">Reply${it.key ? ' · ' + esc(it.key) : ''}</div><h3>${esc(it.title)}</h3>
+    <div class="chips">${QUICK.map((q) => `<button class="tab" data-chip="${esc(q)}">${esc(q.replace(/: $/, '…'))}</button>`).join('')}</div>
+    <div class="replybox"><textarea class="search" id="replyTx" rows="4" placeholder="Type it, or tap the mic and say it">${esc(store.get('draft:' + id) || '')}</textarea>
+      <button class="btn g" data-mic="reply" aria-label="Say your reply">${ICON.mic}</button></div>
+    <div class="stack"><button class="btn big" data-send="${esc(id)}">Copy and open the thread</button><button class="btn ghost x" data-close="1">Cancel</button></div>
+    <p class="hint" style="color:var(--muted);font-size:12px">Claude can't read this app, so this copies your reply and opens the thread. Paste it there and send.</p>`);
+  $('replyTx').addEventListener('input', (e) => store.set('draft:' + id, e.target.value));
 }
 function closeSheet() { $('sheet').classList.remove('on'); $('sheetBg').classList.remove('on'); }
 $('sheetBg').onclick = closeSheet;
@@ -350,7 +678,7 @@ $('sheetBg').onclick = closeSheet;
 function go(v) {
   view = v;
   document.querySelectorAll('.view').forEach((el) => el.classList.toggle('on', el.id === 'v-' + v));
-  document.querySelectorAll('nav.bar button').forEach((b) => b.classList.toggle('sel', b.dataset.go === v));
+  document.querySelectorAll('nav.bar button[data-go]').forEach((b) => b.classList.toggle('sel', b.dataset.go === v));
   scrollTo(0, 0);
 }
 
@@ -362,16 +690,45 @@ async function removeIds(ids) {
   await load();
 }
 
+// A pending "tap to hear / tap to talk" runs on the next tap anywhere.
+document.addEventListener('click', (e) => {
+  if (!pendingTap) return;
+  const f = pendingTap; pendingTap = null;
+  if (e.target.closest('#vx')) { e.stopPropagation(); hideBar(); return; }
+  if (e.target.closest('[data-mic],[data-say],[data-brief]')) return; // that button does its own thing
+  f();
+}, true);
+$('vx').onclick = stopVoice;
+
 document.addEventListener('click', async (e) => {
-  const t = e.target.closest('[data-go],[data-kind],[data-brand],[data-del],[data-handled],[data-thread],[data-open]');
+  const t = e.target.closest('[data-go],[data-kind],[data-brand],[data-del],[data-handled],[data-thread],[data-open],[data-say],[data-mic],[data-brief],[data-reply],[data-chip],[data-send],[data-close],[data-todo],[data-todel]');
   if (!t) return;
   const d = t.dataset;
   if (d.go) { if (d.filter) { kindFilter = d.filter; brandFilter = 'all'; query = ''; $('q').value = ''; render(); } go(d.go); return; }
   if (d.kind) { kindFilter = d.kind; render(); return; }
   if (d.brand) { brandFilter = d.brand; store.set('brand', brandFilter); render(); return; }
-  if (d.del) { e.stopPropagation(); closeSheet(); await removeIds([d.del]); toast('Deleted'); return; }
+  if (d.say) { sayItem(items.find((i) => i.id === d.say)); return; }
+  if (d.mic) { mic(d.mic); return; }
+  if (d.brief) { briefMe(); return; }
+  if (d.reply) { openReply(d.reply); return; }
+  if (d.chip) { const tx = $('replyTx'); tx.value = d.chip; tx.dispatchEvent(new Event('input')); tx.focus(); tx.setSelectionRange(tx.value.length, tx.value.length); return; }
+  if (d.close) { closeSheet(); return; }
+  if (d.send) {
+    // Copy and open in the same tap, before anything async, so Android allows both.
+    const it = items.find((i) => i.id === d.send); const text = ($('replyTx').value || '').trim();
+    if (!it) return;
+    if (!text) { toast('Write or say your reply first'); return; }
+    if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {});
+    window.open(it.url || PROJECT_URL, '_blank', 'noopener');
+    it.reply = text; it.repliedAt = Date.now(); it.read = true; if (isWaiting(it)) it.cleared = true;
+    store.set('draft:' + it.id, '');
+    closeSheet(); await putItem(it); await load(); toast('Copied. Paste it in the thread and send');
+    return;
+  }
+  if (d.todo) { const td = todos.find((x) => x.id === d.todo); if (td) { td.done = t.checked; td.doneAt = Date.now(); await putTodos(todos); render(); } return; }
+  if (d.todel) { todos = todos.filter((x) => x.id !== d.todel); await putTodos(todos); render(); return; }
+  if (d.del) { closeSheet(); await removeIds([d.del]); toast('Deleted'); return; }
   if (d.handled) {
-    e.stopPropagation();
     const it = items.find((i) => i.id === d.handled);
     if (it) { it.cleared = true; it.read = true; await putItem(it); }
     closeSheet(); await load(); toast('Handled'); return;
@@ -407,16 +764,29 @@ document.addEventListener('touchend', async (e) => {
 });
 
 // ---- Settings ----
+function fillVoices() {
+  const vs = voices().filter((v) => /^(en|sq)/i.test(v.lang));
+  const s = $('voiceSel');
+  s.innerHTML = '<option value="">Automatic</option>' + vs.map((v) => `<option value="${esc(v.voiceURI)}">${esc(v.name)} (${esc(v.lang)})</option>`).join('');
+  s.value = vs.some((v) => v.voiceURI === prefs.voiceURI) ? prefs.voiceURI : '';
+}
 async function loadSettings() {
-  const p = await getSettings();
-  $('quietOn').checked = p.quietOn; $('quietFrom').value = p.quietFrom; $('quietTo').value = p.quietTo; $('urgentRings').checked = p.urgentRings;
+  prefs = await getSettings();
+  $('quietOn').checked = prefs.quietOn; $('quietFrom').value = prefs.quietFrom; $('quietTo').value = prefs.quietTo; $('urgentRings').checked = prefs.urgentRings;
+  $('autoBrief').checked = prefs.autoBrief; $('rate').value = prefs.rate; $('rateVal').textContent = Number(prefs.rate).toFixed(1) + '×'; $('listenLang').value = prefs.listenLang;
+  fillVoices();
 }
 async function saveSettings() {
-  await putSettings({ quietOn: $('quietOn').checked, quietFrom: $('quietFrom').value || DEFAULTS.quietFrom,
-    quietTo: $('quietTo').value || DEFAULTS.quietTo, urgentRings: $('urgentRings').checked });
+  prefs = { ...prefs, quietOn: $('quietOn').checked, quietFrom: $('quietFrom').value || DEFAULTS.quietFrom, quietTo: $('quietTo').value || DEFAULTS.quietTo,
+    urgentRings: $('urgentRings').checked, autoBrief: $('autoBrief').checked, voiceURI: $('voiceSel').value, rate: Number($('rate').value) || 1, listenLang: $('listenLang').value };
+  $('rateVal').textContent = prefs.rate.toFixed(1) + '×';
+  await putSettings(prefs);
   toast('Saved');
 }
-['quietOn', 'quietFrom', 'quietTo', 'urgentRings'].forEach((id) => $(id).addEventListener('change', saveSettings));
+['quietOn', 'quietFrom', 'quietTo', 'urgentRings', 'autoBrief', 'voiceSel', 'rate', 'listenLang'].forEach((id) => $(id).addEventListener('change', saveSettings));
+$('rate').addEventListener('input', () => { $('rateVal').textContent = Number($('rate').value).toFixed(1) + '×'; });
+$('testVoice').onclick = () => say(`${hello()} Your assistant is ready.`, 'Testing the voice');
+if (synth) synth.onvoiceschanged = fillVoices;
 
 // ---- Push setup ----
 function keyBytes(b64) {
@@ -469,10 +839,32 @@ $('copyBtn').onclick = async () => {
   catch { $('code').classList.remove('hidden'); toast('Long-press the code to copy'); }
 };
 
+// Opened from a notification: show the update, and read briefs out loud.
+function arrive(id, play) {
+  const it = items.find((i) => i.id === id);
+  if (!it) return;
+  go('home'); openItem(id);
+  if (play === 'force' || (play === 'auto' && prefs.autoBrief)) sayItem(it);
+}
+// Long-press shortcuts on the app icon.
+function shortcut(what) {
+  if (what === 'brief') briefMe();
+  if (what === 'ask') needTap(() => listen(command), 'Tap anywhere to talk');
+  if (what === 'todo') { go('home'); $('todoIn').focus(); }
+}
+
+function fromHash() {
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (!h.has('item') && !h.has('do')) return;
+  history.replaceState(null, '', location.pathname);
+  if (h.get('item')) arrive(h.get('item'), h.get('play'));
+  if (h.get('do')) shortcut(h.get('do'));
+}
+
 navigator.serviceWorker.addEventListener('message', (e) => {
   const m = e.data || {};
   if (m.type === 'new') reg.pushManager.getSubscription().then((s) => { if (s) store.set('paired', s.endpoint); refreshSetup(); });
-  if (m.type === 'open') load().then(() => { go('home'); openItem(m.id); });
+  if (m.type === 'open') load().then(() => arrive(m.id, m.play));
   else load();
 });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) { load(); refreshSetup(); } });
@@ -481,12 +873,16 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) { lo
   reg = await navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' });
   await navigator.serviceWorker.ready;
   reg.update();
+  await loadSettings();
   await load();
+  // Ticked to-dos clear themselves after a day.
+  const fresh = todos.filter((t) => !t.done || Date.now() - (t.doneAt || 0) < 86400e3);
+  if (fresh.length !== todos.length) { todos = fresh; putTodos(todos); render(); }
   const s = await reg.pushManager.getSubscription();
   if (s && items.length) store.set('paired', s.endpoint);
-  loadSettings(); refreshSetup();
-  const m = /item=([^&]+)/.exec(location.hash);
-  if (m) { history.replaceState(null, '', location.pathname); openItem(decodeURIComponent(m[1])); }
+  refreshSetup();
+  fromHash();
+  addEventListener('hashchange', fromHash);
   setInterval(render, 60000);
 })();
 </script>
