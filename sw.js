@@ -67,6 +67,7 @@ self.addEventListener('push', (e) => {
       tag: it.key || it.id, renotify: !silent, silent,
       icon: 'icon-192.png', badge: 'badge-96.png', timestamp: it.ts,
       requireInteraction: urgent, actions,
+      vibrate: silent ? [] : urgent ? [300, 120, 300, 120, 300] : [250, 100, 250],
       data: { url: it.url, id: it.id },
     });
     await tellClients();
